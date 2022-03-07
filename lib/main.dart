@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:tulibumu/screens/UserPage.dart';
+import 'package:tulibumu/screens/AddLoan.dart';
 //import 'package:tulibumu/screens/LoginScreen.dart';
 import 'package:tulibumu/utils/constants.dart';
 import 'dart:ui';
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
           ),
           textTheme: screenWidth < 500 ? TEXT_THEME_SMALL : TEXT_THEME_DEFAULT,
           fontFamily: "Montserrat"),
-      home: getState == 1 ? const Text('You are a member') : UserPage(),
+      home: getState == 1 ? const Text('You are a member') : AddLoan(),
     );
   }
 }

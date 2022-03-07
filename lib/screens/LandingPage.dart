@@ -411,18 +411,54 @@ class LoanItem extends StatelessWidget {
             bottomRight: Radius.circular(20),
           )),
       child: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: !user
-                ? [
-                    Expanded(
-                      flex: 6,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 5, top: 10),
+          // mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: !user
+                  ? [
+                      Expanded(
+                        flex: 6,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 5, top: 10),
+                          child: Row(
+                            children: [
+                              Text(
+                                "Amount:",
+                                textAlign: TextAlign.start,
+                                style: themeData.textTheme.bodyText1,
+                              ),
+                              addHorizontalSpace(1),
+                              Text(
+                                record["amount"].toString() + ",",
+                                textAlign: TextAlign.end,
+                                style: themeData.textTheme.bodyText1,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 5,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 2, right: 5, top: 10),
+                          child: Text(
+                            record["to"],
+                            textAlign: TextAlign.end,
+                            style: themeData.textTheme.bodyText1,
+                          ),
+                        ),
+                      ),
+                    ]
+                  : [
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(left: 5, right: 5, top: 10),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
                               "Amount:",
@@ -431,266 +467,229 @@ class LoanItem extends StatelessWidget {
                             ),
                             addHorizontalSpace(1),
                             Text(
-                              record["amount"].toString() + ",",
+                              record["amount"].toString() + "/=",
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1,
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 5,
-                      child: Padding(
-                        padding:
-                            const EdgeInsets.only(left: 2, right: 5, top: 10),
-                        child: Text(
-                          record["to"],
-                          textAlign: TextAlign.end,
-                          style: themeData.textTheme.bodyText1,
-                        ),
-                      ),
-                    ),
-                  ]
-                : [
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 5, right: 5, top: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Amount:",
-                            textAlign: TextAlign.start,
-                            style: themeData.textTheme.bodyText1,
-                          ),
-                          addHorizontalSpace(1),
-                          Text(
-                            record["amount"].toString() + "/=",
-                            textAlign: TextAlign.end,
-                            style: themeData.textTheme.bodyText1,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-          ),
-          const Divider(
-            //   height: 25,
-            thickness: 1,
-            color: Colors.green,
-          ),
-          IntrinsicHeight(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 6,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 1),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                "Time:",
-                                textAlign: TextAlign.start,
-                                style: themeData.textTheme.bodyText1,
-                              ),
-                              Text(
-                                record["loan_time"].toString(),
-                                textAlign: TextAlign.end,
-                                style: themeData.textTheme.bodyText1,
-                              ),
-                            ],
-                          ),
-                          addVerticalSpace(3),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Total Return:",
-                                textAlign: TextAlign.start,
-                                style: themeData.textTheme.bodyText1,
-                              ),
-                              Text(
-                                record["return_total"].toString(),
-                                textAlign: TextAlign.end,
-                                style: themeData.textTheme.bodyText1,
-                              ),
-                            ],
-                          ),
-                          addVerticalSpace(3),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Monthly Return:",
-                                textAlign: TextAlign.start,
-                                style: themeData.textTheme.bodyText1,
-                              ),
-                              Text(
-                                record["monthly_pay"].toString(),
-                                textAlign: TextAlign.end,
-                                style: themeData.textTheme.bodyText1,
-                              ),
-                            ],
-                          ),
-                          addVerticalSpace(3),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Returned so far:",
-                                textAlign: TextAlign.start,
-                                style: themeData.textTheme.bodyText1,
-                              ),
-                              Text(
-                                record["cash_returned"].toString(),
-                                textAlign: TextAlign.end,
-                                style: themeData.textTheme.bodyText1,
-                              ),
-                            ],
-                          ),
-                          addVerticalSpace(3),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Fine so far:",
-                                textAlign: TextAlign.start,
-                                style: themeData.textTheme.bodyText1,
-                              ),
-                              Text(
-                                record["fine"].toString(),
-                                textAlign: TextAlign.end,
-                                style: themeData.textTheme.bodyText1,
-                              ),
-                            ],
-                          ),
-                        ]),
-                  ),
-                ),
-                const VerticalDivider(
-                  thickness: .6,
-                  color: Colors.green,
-                ),
-                Expanded(
-                  flex: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Column(children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Status:",
-                            textAlign: TextAlign.start,
-                            style: themeData.textTheme.bodyText1,
-                          ),
-                          Text(
-                              record["state"] == "complete"
-                                  ? "done"
-                                  : record["state"],
-                              textAlign: TextAlign.end,
-                              style: record["state"]! == "active"
-                                  ? const TextStyle(
-                                      color: Colors.green,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      height: 1.5)
-                                  : record["state"]! == "due"
-                                      ? const TextStyle(
-                                          color: Colors.red,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                          height: 1.5)
-                                      : themeData.textTheme.bodyText1),
-                        ],
-                      ),
-                      addVerticalSpace(3),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Started:",
-                            textAlign: TextAlign.start,
-                            style: themeData.textTheme.bodyText1,
-                          ),
-                          Text(
-                            record["started"].toString(),
-                            textAlign: TextAlign.end,
-                            style: themeData.textTheme.bodyText1,
-                          ),
-                        ],
-                      ),
-                      addVerticalSpace(3),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Months paid:",
-                            textAlign: TextAlign.start,
-                            style: themeData.textTheme.bodyText1,
-                          ),
-                          Text(
-                            record["months_paid"].toString(),
-                            textAlign: TextAlign.end,
-                            style: themeData.textTheme.bodyText1,
-                          ),
-                        ],
-                      ),
-                      addVerticalSpace(3),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Months past:",
-                            textAlign: TextAlign.start,
-                            style: themeData.textTheme.bodyText1,
-                          ),
-                          Text(
-                            record["months_count"].toString(),
-                            textAlign: TextAlign.end,
-                            style: themeData.textTheme.bodyText1,
-                          ),
-                        ],
-                      ),
-                      addVerticalSpace(3),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "more",
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                height: 1.5),
-                          ),
-                          Text(
-                            "....",
-                            textAlign: TextAlign.end,
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                height: 1.5),
-                          ),
-                        ],
-                      ),
-                    ]),
-                  ),
-                ),
-              ],
+                    ],
             ),
-          )
-        ],
-      ),
+            const Divider(
+              //   height: 25,
+              thickness: 1,
+              color: Colors.green,
+            ),
+            IntrinsicHeight(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 6,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 1),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "Time:",
+                                  textAlign: TextAlign.start,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                                Text(
+                                  record["loan_time"].toString(),
+                                  textAlign: TextAlign.end,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                              ],
+                            ),
+                            addVerticalSpace(3),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Total Return:",
+                                  textAlign: TextAlign.start,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                                Text(
+                                  record["return_total"].toString(),
+                                  textAlign: TextAlign.end,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                              ],
+                            ),
+                            addVerticalSpace(3),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Monthly Return:",
+                                  textAlign: TextAlign.start,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                                Text(
+                                  record["monthly_pay"].toString(),
+                                  textAlign: TextAlign.end,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                              ],
+                            ),
+                            addVerticalSpace(3),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Returned so far:",
+                                  textAlign: TextAlign.start,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                                Text(
+                                  record["cash_returned"].toString(),
+                                  textAlign: TextAlign.end,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                              ],
+                            ),
+                            addVerticalSpace(3),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Fine so far:",
+                                  textAlign: TextAlign.start,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                                Text(
+                                  record["fine"].toString(),
+                                  textAlign: TextAlign.end,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                              ],
+                            ),
+                          ]),
+                    ),
+                  ),
+                  const VerticalDivider(
+                    thickness: .6,
+                    color: Colors.green,
+                  ),
+                  Expanded(
+                    flex: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Column(children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Status:",
+                              textAlign: TextAlign.start,
+                              style: themeData.textTheme.bodyText1,
+                            ),
+                            Text(
+                                record["state"] == "complete"
+                                    ? "done"
+                                    : record["state"],
+                                textAlign: TextAlign.end,
+                                style: record["state"]! == "active"
+                                    ? const TextStyle(
+                                        color: Colors.green,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.5)
+                                    : record["state"]! == "due"
+                                        ? const TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                            height: 1.5)
+                                        : themeData.textTheme.bodyText1),
+                          ],
+                        ),
+                        addVerticalSpace(3),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Started:",
+                              textAlign: TextAlign.start,
+                              style: themeData.textTheme.bodyText1,
+                            ),
+                            Text(
+                              record["started"].toString(),
+                              textAlign: TextAlign.end,
+                              style: themeData.textTheme.bodyText1,
+                            ),
+                          ],
+                        ),
+                        addVerticalSpace(3),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Months paid:",
+                              textAlign: TextAlign.start,
+                              style: themeData.textTheme.bodyText1,
+                            ),
+                            Text(
+                              record["months_paid"].toString(),
+                              textAlign: TextAlign.end,
+                              style: themeData.textTheme.bodyText1,
+                            ),
+                          ],
+                        ),
+                        addVerticalSpace(3),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Months past:",
+                              textAlign: TextAlign.start,
+                              style: themeData.textTheme.bodyText1,
+                            ),
+                            Text(
+                              record["months_count"].toString(),
+                              textAlign: TextAlign.end,
+                              style: themeData.textTheme.bodyText1,
+                            ),
+                          ],
+                        ),
+                        addVerticalSpace(3),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "more",
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  height: 1.5),
+                            ),
+                            Text(
+                              "....",
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  height: 1.5),
+                            ),
+                          ],
+                        ),
+                      ]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ]),
     );
   }
 }
