@@ -105,18 +105,24 @@ class _addloan extends State<AddLoan> {
       appBar: AppBar(
         backgroundColor: COLOR_BACK_GROUND,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: Row(
           children: [
-            LimitedBox(
-              child: SvgPicture.asset(
-                back,
-                color: Colors.black,
-                width: 40,
-                height: 40,
-                theme: SvgTheme(currentColor: null, fontSize: 12, xHeight: 6),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: LimitedBox(
+                child: SvgPicture.asset(
+                  back,
+                  color: Colors.black,
+                  width: 40,
+                  height: 40,
+                  theme: SvgTheme(currentColor: null, fontSize: 12, xHeight: 6),
+                ),
+                maxHeight: 40,
+                maxWidth: 40,
               ),
-              maxHeight: 40,
-              maxWidth: 40,
             ),
             const Padding(
               padding: const EdgeInsets.only(left: 70),

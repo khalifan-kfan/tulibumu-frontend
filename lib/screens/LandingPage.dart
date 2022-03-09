@@ -4,6 +4,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:tulibumu/custom/BorderIcon.dart';
 import 'package:tulibumu/custom/OptionButton.dart';
+import 'package:tulibumu/screens/DetailsPage.dart';
+import 'package:tulibumu/screens/PaymentsPage.dart';
 
 //import 'package:tulibumu/screens/DetailPage.dart';
 //import 'package:tulibumu/utils/DialogHelper.dart';
@@ -25,28 +27,28 @@ class LandingPage extends StatefulWidget {
 
 class LandingPage_ extends State<LandingPage> {
   late int chosen = 1;
-  late bool islogged_in;
+  bool logged_in = false;
   static const storage = FlutterSecureStorage();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  Future<int> getState() async {
+
+  Future<void> getState() async {
     const storage = FlutterSecureStorage();
-    dynamic _user = await storage.read(key: "tulibumu_user");
-    if (_user!["token"]) {
-      return 1;
+    var _token = await storage.read(key: "token");
+    if (_token.toString().isNotEmpty) {
+      // stay
+      logged_in = true;
     } else {
-      return 0;
+      //login page
+      logged_in = false;
     }
+    // print(logged_in);
   }
 
   @override
   void initState() {
     super.initState();
     chosen = 1;
-    if (getState() == 1) {
-      islogged_in = true;
-    } else {
-      islogged_in = false;
-    }
+    getState();
   }
 
   List<Map<String, dynamic>> images = [
@@ -308,6 +310,7 @@ class LandingPage_ extends State<LandingPage> {
                                 return LoanItem(
                                   record: images[index],
                                   user: false,
+                                  choice: chosen,
                                 );
                               },
                               itemCount: images.length,
@@ -330,6 +333,7 @@ class LandingPage_ extends State<LandingPage> {
                                 return LoanItem(
                                   record: images[index],
                                   user: true,
+                                  choice: chosen,
                                 );
                               },
                               itemCount: images.length,
@@ -352,6 +356,7 @@ class LandingPage_ extends State<LandingPage> {
                                 return LoanItem(
                                   record: images[index],
                                   user: true,
+                                  choice: chosen,
                                 );
                               },
                               itemCount: images.length,
@@ -390,306 +395,344 @@ class LandingPage_ extends State<LandingPage> {
 class LoanItem extends StatelessWidget {
   final dynamic record;
   final bool user;
+  final int choice;
 
-  const LoanItem({Key? key, this.record, required this.user}) : super(key: key);
+  const LoanItem(
+      {Key? key, this.record, required this.user, required this.choice})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     //DateTime record_day = record["date"].toDate();
     final ThemeData themeData = Theme.of(context);
 
     final dd = new DateFormat('dd-MM-yyyy');
-    return Container(
-      height: 160,
-      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-      decoration: const BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          )),
-      child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: !user
-                  ? [
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+          decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              )),
+          child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: !user
+                      ? [
+                          Expanded(
+                            flex: 6,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 5, top: 10),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Amount:",
+                                    textAlign: TextAlign.start,
+                                    style: themeData.textTheme.bodyText1,
+                                  ),
+                                  addHorizontalSpace(1),
+                                  Text(
+                                    record["amount"].toString() + ",",
+                                    textAlign: TextAlign.end,
+                                    style: themeData.textTheme.bodyText1,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 2, right: 5, top: 10),
+                              child: Text(
+                                record["to"],
+                                textAlign: TextAlign.end,
+                                style: themeData.textTheme.bodyText1,
+                              ),
+                            ),
+                          ),
+                        ]
+                      : [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 5, right: 5, top: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Amount:",
+                                  textAlign: TextAlign.start,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                                addHorizontalSpace(1),
+                                Text(
+                                  record["amount"].toString() + "/=",
+                                  textAlign: TextAlign.end,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                ),
+                const Divider(
+                  //   height: 25,
+                  thickness: 1,
+                  color: Colors.green,
+                ),
+                IntrinsicHeight(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Expanded(
                         flex: 6,
                         child: Padding(
-                          padding: const EdgeInsets.only(right: 5, top: 10),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Amount:",
-                                textAlign: TextAlign.start,
-                                style: themeData.textTheme.bodyText1,
-                              ),
-                              addHorizontalSpace(1),
-                              Text(
-                                record["amount"].toString() + ",",
-                                textAlign: TextAlign.end,
-                                style: themeData.textTheme.bodyText1,
-                              ),
-                            ],
-                          ),
+                          padding: const EdgeInsets.only(left: 1),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Time:",
+                                      textAlign: TextAlign.start,
+                                      style: themeData.textTheme.bodyText1,
+                                    ),
+                                    Text(
+                                      record["loan_time"].toString(),
+                                      textAlign: TextAlign.end,
+                                      style: themeData.textTheme.bodyText1,
+                                    ),
+                                  ],
+                                ),
+                                addVerticalSpace(3),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Total Return:",
+                                      textAlign: TextAlign.start,
+                                      style: themeData.textTheme.bodyText1,
+                                    ),
+                                    Text(
+                                      record["return_total"].toString(),
+                                      textAlign: TextAlign.end,
+                                      style: themeData.textTheme.bodyText1,
+                                    ),
+                                  ],
+                                ),
+                                addVerticalSpace(3),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Monthly Return:",
+                                      textAlign: TextAlign.start,
+                                      style: themeData.textTheme.bodyText1,
+                                    ),
+                                    Text(
+                                      record["monthly_pay"].toString(),
+                                      textAlign: TextAlign.end,
+                                      style: themeData.textTheme.bodyText1,
+                                    ),
+                                  ],
+                                ),
+                                addVerticalSpace(3),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Returned so far:",
+                                      textAlign: TextAlign.start,
+                                      style: themeData.textTheme.bodyText1,
+                                    ),
+                                    Text(
+                                      record["cash_returned"].toString(),
+                                      textAlign: TextAlign.end,
+                                      style: themeData.textTheme.bodyText1,
+                                    ),
+                                  ],
+                                ),
+                                addVerticalSpace(3),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Fine so far:",
+                                      textAlign: TextAlign.start,
+                                      style: themeData.textTheme.bodyText1,
+                                    ),
+                                    Text(
+                                      record["fine"].toString(),
+                                      textAlign: TextAlign.end,
+                                      style: themeData.textTheme.bodyText1,
+                                    ),
+                                  ],
+                                ),
+                              ]),
                         ),
+                      ),
+                      const VerticalDivider(
+                        thickness: .6,
+                        color: Colors.green,
                       ),
                       Expanded(
-                        flex: 5,
+                        flex: 4,
                         child: Padding(
-                          padding:
-                              const EdgeInsets.only(left: 2, right: 5, top: 10),
-                          child: Text(
-                            record["to"],
-                            textAlign: TextAlign.end,
-                            style: themeData.textTheme.bodyText1,
-                          ),
-                        ),
-                      ),
-                    ]
-                  : [
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(left: 5, right: 5, top: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Amount:",
-                              textAlign: TextAlign.start,
-                              style: themeData.textTheme.bodyText1,
-                            ),
-                            addHorizontalSpace(1),
-                            Text(
-                              record["amount"].toString() + "/=",
-                              textAlign: TextAlign.end,
-                              style: themeData.textTheme.bodyText1,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-            ),
-            const Divider(
-              //   height: 25,
-              thickness: 1,
-              color: Colors.green,
-            ),
-            IntrinsicHeight(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 6,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 1),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  "Time:",
-                                  textAlign: TextAlign.start,
-                                  style: themeData.textTheme.bodyText1,
-                                ),
-                                Text(
-                                  record["loan_time"].toString(),
-                                  textAlign: TextAlign.end,
-                                  style: themeData.textTheme.bodyText1,
-                                ),
-                              ],
-                            ),
-                            addVerticalSpace(3),
+                          padding: const EdgeInsets.only(right: 4),
+                          child: Column(children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Total Return:",
+                                  "Status:",
                                   textAlign: TextAlign.start,
                                   style: themeData.textTheme.bodyText1,
                                 ),
                                 Text(
-                                  record["return_total"].toString(),
-                                  textAlign: TextAlign.end,
-                                  style: themeData.textTheme.bodyText1,
-                                ),
-                              ],
-                            ),
-                            addVerticalSpace(3),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Monthly Return:",
-                                  textAlign: TextAlign.start,
-                                  style: themeData.textTheme.bodyText1,
-                                ),
-                                Text(
-                                  record["monthly_pay"].toString(),
-                                  textAlign: TextAlign.end,
-                                  style: themeData.textTheme.bodyText1,
-                                ),
-                              ],
-                            ),
-                            addVerticalSpace(3),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Returned so far:",
-                                  textAlign: TextAlign.start,
-                                  style: themeData.textTheme.bodyText1,
-                                ),
-                                Text(
-                                  record["cash_returned"].toString(),
-                                  textAlign: TextAlign.end,
-                                  style: themeData.textTheme.bodyText1,
-                                ),
-                              ],
-                            ),
-                            addVerticalSpace(3),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Fine so far:",
-                                  textAlign: TextAlign.start,
-                                  style: themeData.textTheme.bodyText1,
-                                ),
-                                Text(
-                                  record["fine"].toString(),
-                                  textAlign: TextAlign.end,
-                                  style: themeData.textTheme.bodyText1,
-                                ),
-                              ],
-                            ),
-                          ]),
-                    ),
-                  ),
-                  const VerticalDivider(
-                    thickness: .6,
-                    color: Colors.green,
-                  ),
-                  Expanded(
-                    flex: 4,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: Column(children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Status:",
-                              textAlign: TextAlign.start,
-                              style: themeData.textTheme.bodyText1,
-                            ),
-                            Text(
-                                record["state"] == "complete"
-                                    ? "done"
-                                    : record["state"],
-                                textAlign: TextAlign.end,
-                                style: record["state"]! == "active"
-                                    ? const TextStyle(
-                                        color: Colors.green,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                        height: 1.5)
-                                    : record["state"]! == "due"
+                                    record["state"] == "complete"
+                                        ? "done"
+                                        : record["state"],
+                                    textAlign: TextAlign.end,
+                                    style: record["state"]! == "active"
                                         ? const TextStyle(
-                                            color: Colors.red,
+                                            color: Colors.green,
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500,
                                             height: 1.5)
-                                        : themeData.textTheme.bodyText1),
-                          ],
+                                        : record["state"]! == "due"
+                                            ? const TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                                height: 1.5)
+                                            : themeData.textTheme.bodyText1),
+                              ],
+                            ),
+                            addVerticalSpace(3),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Started:",
+                                  textAlign: TextAlign.start,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                                Text(
+                                  record["started"].toString(),
+                                  textAlign: TextAlign.end,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                              ],
+                            ),
+                            addVerticalSpace(3),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Months paid:",
+                                  textAlign: TextAlign.start,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                                Text(
+                                  record["months_paid"].toString(),
+                                  textAlign: TextAlign.end,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                              ],
+                            ),
+                            addVerticalSpace(3),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Months past:",
+                                  textAlign: TextAlign.start,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                                Text(
+                                  record["months_count"].toString(),
+                                  textAlign: TextAlign.end,
+                                  style: themeData.textTheme.bodyText1,
+                                ),
+                              ],
+                            ),
+                            addVerticalSpace(3),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => const DetailsPage()));
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "more",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.5),
+                                  ),
+                                  Text(
+                                    "....",
+                                    textAlign: TextAlign.end,
+                                    style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.5),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ]),
                         ),
-                        addVerticalSpace(3),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Started:",
-                              textAlign: TextAlign.start,
-                              style: themeData.textTheme.bodyText1,
-                            ),
-                            Text(
-                              record["started"].toString(),
-                              textAlign: TextAlign.end,
-                              style: themeData.textTheme.bodyText1,
-                            ),
-                          ],
-                        ),
-                        addVerticalSpace(3),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Months paid:",
-                              textAlign: TextAlign.start,
-                              style: themeData.textTheme.bodyText1,
-                            ),
-                            Text(
-                              record["months_paid"].toString(),
-                              textAlign: TextAlign.end,
-                              style: themeData.textTheme.bodyText1,
-                            ),
-                          ],
-                        ),
-                        addVerticalSpace(3),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Months past:",
-                              textAlign: TextAlign.start,
-                              style: themeData.textTheme.bodyText1,
-                            ),
-                            Text(
-                              record["months_count"].toString(),
-                              textAlign: TextAlign.end,
-                              style: themeData.textTheme.bodyText1,
-                            ),
-                          ],
-                        ),
-                        addVerticalSpace(3),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "more",
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  height: 1.5),
-                            ),
-                            Text(
-                              "....",
-                              textAlign: TextAlign.end,
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  height: 1.5),
-                            ),
-                          ],
-                        ),
-                      ]),
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              ]),
+        ),
+        addVerticalSpace(5),
+        if (choice == 2 || choice == 1)
+          Column(
+            children: <Widget>[
+              TextButton(
+                style: TextButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)),
+                    minimumSize: const Size(300, 40),
+                    backgroundColor: Colors.green),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const PaymentsPage()));
+                },
+                child: const Text(
+                  "Register Payments",
+                  style: TextStyle(fontSize: 14, color: COLOR_WHITE),
+                ),
               ),
-            ),
-          ]),
+            ],
+          )
+      ],
     );
   }
 }

@@ -53,245 +53,244 @@ class _State extends State<PaymentsPage> {
     double padding = 25;
     final sidePadding = EdgeInsets.symmetric(horizontal: padding);
 
-    return WillPopScope(
-      onWillPop: () => Future.value(false),
-      child: SafeArea(
-        child: Scaffold(
-          backgroundColor: COLOR_BACK_GROUND,
-          body: Container(
-            height: size.height,
-            width: size.width,
-            child: Stack(children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                addVerticalSpace(padding),
-                Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Padding(
-                        padding: sidePadding,
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: LimitedBox(
-                            child: SvgPicture.asset(
-                              back,
-                              color: Colors.black,
-                              width: 40,
-                              height: 40,
-                              theme: const SvgTheme(
-                                  currentColor: null, fontSize: 12, xHeight: 6),
-                            ),
-                            maxHeight: 40,
-                            maxWidth: 40,
-                          ),
-                        ),
-                      ),
-                      addHorizontalSpace(45),
-                      Text(
-                        'Payments',
-                        textAlign: TextAlign.start,
-                        style: themeData.textTheme.headline1,
-                      ),
-                    ]),
-                addVerticalSpace(5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: COLOR_BACK_GROUND,
+        body: Container(
+          height: size.height,
+          width: size.width,
+          child: Stack(children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              addVerticalSpace(padding),
+              Row(
+                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Padding(
                       padding: sidePadding,
-                      child: Text(
-                        "Loan For:",
-                        style: themeData.textTheme.headline2,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        images[0]["to"].toString(),
-                        style: themeData.textTheme.headline4,
-                      ),
-                    ),
-                  ],
-                ),
-                addVerticalSpace(5),
-                Padding(
-                    padding: sidePadding,
-                    child: const Divider(
-                      height: 25,
-                      thickness: 2,
-                      color: Colors.black,
-                    )),
-                addVerticalSpace(5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: sidePadding,
-                      child: Text(
-                        "Months paid",
-                        style: themeData.textTheme.bodyText2,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        images[0]["months_paid"].toString(),
-                        style: themeData.textTheme.bodyText2,
-                      ),
-                    ),
-                  ],
-                ),
-                addVerticalSpace(5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: sidePadding,
-                      child: Text(
-                        "Months past",
-                        style: themeData.textTheme.bodyText2,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        images[0]["months_count"].toString(),
-                        style: themeData.textTheme.bodyText2,
-                      ),
-                    ),
-                  ],
-                ),
-                addVerticalSpace(5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: sidePadding,
-                      child: Text(
-                        "Loan time",
-                        style: themeData.textTheme.bodyText2,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        images[0]["loan_time"].toString(),
-                        style: themeData.textTheme.bodyText2,
-                      ),
-                    ),
-                  ],
-                ),
-                addVerticalSpace(10),
-                Center(
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: COLOR_CLICK_GREEN,
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 13),
-                      margin: const EdgeInsets.only(left: 20),
-                      child: Text(
-                        images[0]["months_paid"] == images[0]["loan_time"]
-                            ? "Fully paid"
-                            : "Pay for Month" +
-                                " " +
-                                (images[0]["months_paid"] + 1).toString(),
-                        style: themeData.textTheme.headline5,
-                      ),
-                    ),
-                  ),
-                ),
-                addVerticalSpace(5),
-                Padding(
-                    padding: sidePadding,
-                    child: const Divider(
-                      height: 25,
-                      thickness: 1,
-                      color: Colors.black,
-                    )),
-                Expanded(
-                  child: Padding(
-                    padding: sidePadding,
-                    child: ListView.separated(
-                      itemBuilder: (BuildContext, index) {
-                        return months.length == 0
-                            ? Center(child: Text(" no months data"))
-                            : MonthItem(
-                                month: months[index],
-                              );
-                      },
-                      itemCount: months.length,
-                      shrinkWrap: true,
-                      physics: BouncingScrollPhysics(),
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const Divider(
-                        color: COLOR_BACK_GROUND,
-                      ),
-                      scrollDirection: Axis.vertical,
-                    ),
-                  ),
-                ),
-              ]),
-              Positioned(
-                bottom: 20,
-                width: size.width,
-                height: 150,
-                child: Center(
-                  child: Column(
-                    children: [
-                      Padding(
-                          padding: sidePadding,
-                          child: const Divider(
-                            thickness: 2,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: LimitedBox(
+                          child: SvgPicture.asset(
+                            back,
                             color: Colors.black,
-                          )),
-                      addVerticalSpace(5),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 35),
-                            child: Text(
-                              "fine",
-                              style: themeData.textTheme.bodyText2,
-                            ),
+                            width: 40,
+                            height: 40,
+                            theme: const SvgTheme(
+                                currentColor: null, fontSize: 12, xHeight: 6),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 35),
-                            child: Text(
-                              images[0]["fine"].toString(),
-                              style: themeData.textTheme.bodyText2,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (images[0]["fine"] > 0)
-                        Center(
-                          child: GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: COLOR_CLICK_GREEN,
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 13),
-                              margin: const EdgeInsets.only(left: 20),
-                              child: Text(
-                                "pay fine",
-                                style: themeData.textTheme.headline5,
-                              ),
-                            ),
-                          ),
+                          maxHeight: 40,
+                          maxWidth: 40,
                         ),
-                    ],
+                      ),
+                    ),
+                    addHorizontalSpace(45),
+                    Text(
+                      'Payments',
+                      textAlign: TextAlign.start,
+                      style: themeData.textTheme.headline1,
+                    ),
+                  ]),
+              addVerticalSpace(5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: sidePadding,
+                    child: Text(
+                      "Loan For:",
+                      style: themeData.textTheme.headline2,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      images[0]["to"].toString(),
+                      style: themeData.textTheme.headline4,
+                    ),
+                  ),
+                ],
+              ),
+              addVerticalSpace(5),
+              Padding(
+                  padding: sidePadding,
+                  child: const Divider(
+                    height: 25,
+                    thickness: 2,
+                    color: Colors.black,
+                  )),
+              addVerticalSpace(5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: sidePadding,
+                    child: Text(
+                      "Months paid",
+                      style: themeData.textTheme.bodyText2,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      images[0]["months_paid"].toString(),
+                      style: themeData.textTheme.bodyText2,
+                    ),
+                  ),
+                ],
+              ),
+              addVerticalSpace(5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: sidePadding,
+                    child: Text(
+                      "Months past",
+                      style: themeData.textTheme.bodyText2,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      images[0]["months_count"].toString(),
+                      style: themeData.textTheme.bodyText2,
+                    ),
+                  ),
+                ],
+              ),
+              addVerticalSpace(5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: sidePadding,
+                    child: Text(
+                      "Loan time",
+                      style: themeData.textTheme.bodyText2,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      images[0]["loan_time"].toString(),
+                      style: themeData.textTheme.bodyText2,
+                    ),
+                  ),
+                ],
+              ),
+              addVerticalSpace(10),
+              Center(
+                child: GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: COLOR_CLICK_GREEN,
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 13),
+                    margin: const EdgeInsets.only(left: 20),
+                    child: Text(
+                      images[0]["months_paid"] == images[0]["loan_time"]
+                          ? "Fully paid"
+                          : "Pay for Month" +
+                              " " +
+                              (images[0]["months_paid"] + 1).toString(),
+                      style: themeData.textTheme.headline5,
+                    ),
+                  ),
+                ),
+              ),
+              addVerticalSpace(5),
+              Padding(
+                  padding: sidePadding,
+                  child: const Divider(
+                    height: 25,
+                    thickness: 1,
+                    color: Colors.black,
+                  )),
+              Expanded(
+                child: Padding(
+                  padding: sidePadding,
+                  child: ListView.separated(
+                    itemBuilder: (BuildContext, index) {
+                      return months.length == 0
+                          ? Center(child: Text(" no months data"))
+                          : MonthItem(
+                              month: months[index],
+                            );
+                    },
+                    itemCount: months.length,
+                    shrinkWrap: true,
+                    physics: BouncingScrollPhysics(),
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(
+                      color: COLOR_BACK_GROUND,
+                    ),
+                    scrollDirection: Axis.vertical,
                   ),
                 ),
               ),
             ]),
-          ),
+            Positioned(
+              bottom: 20,
+              width: size.width,
+              height: 150,
+              child: Center(
+                child: Column(
+                  children: [
+                    Padding(
+                        padding: sidePadding,
+                        child: const Divider(
+                          thickness: 2,
+                          color: Colors.black,
+                        )),
+                    addVerticalSpace(5),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 35),
+                          child: Text(
+                            "fine",
+                            style: themeData.textTheme.bodyText2,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 35),
+                          child: Text(
+                            images[0]["fine"].toString(),
+                            style: themeData.textTheme.bodyText2,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (images[0]["fine"] > 0)
+                      Center(
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: COLOR_CLICK_GREEN,
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 13),
+                            margin: const EdgeInsets.only(left: 20),
+                            child: Text(
+                              "pay fine",
+                              style: themeData.textTheme.headline5,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ]),
         ),
       ),
     );

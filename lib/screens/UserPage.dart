@@ -62,93 +62,92 @@ class _State_ extends State<UserPage> {
     final ThemeData themeData = Theme.of(context);
     double padding = 25;
     final sidePadding = EdgeInsets.symmetric(horizontal: padding);
-    return WillPopScope(
-      onWillPop: () => Future.value(false),
-      child: SafeArea(
-        child: Scaffold(
-          backgroundColor: COLOR_BACK_GROUND,
-          body: Container(
-            height: size.height,
-            width: size.width,
-            child: Stack(children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                addVerticalSpace(padding),
-                Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Padding(
-                        padding: sidePadding,
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: LimitedBox(
-                            child: SvgPicture.asset(
-                              back,
-                              color: Colors.black,
-                              width: 40,
-                              height: 40,
-                              theme: const SvgTheme(
-                                  currentColor: null, fontSize: 12, xHeight: 6),
-                            ),
-                            maxHeight: 40,
-                            maxWidth: 40,
-                          ),
-                        ),
-                      ),
-                      addHorizontalSpace(45),
-                      Text(
-                        'Users',
-                        textAlign: TextAlign.start,
-                        style: themeData.textTheme.headline1,
-                      ),
-                    ]),
-                addVerticalSpace(5),
-                Padding(
-                  padding: sidePadding,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Total:",
-                        style: themeData.textTheme.headline2,
-                      ),
-                      Text(
-                        images.length.toString(),
-                        style: themeData.textTheme.headline1,
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                    padding: sidePadding,
-                    child: const Divider(
-                      height: 25,
-                      thickness: 1,
-                      color: Colors.black,
-                    )),
-                Expanded(
-                  child: Padding(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: COLOR_BACK_GROUND,
+        body: Container(
+          height: size.height,
+          width: size.width,
+          child: Stack(children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              addVerticalSpace(padding),
+              Row(
+                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Padding(
                       padding: sidePadding,
-                      child: ListView.separated(
-                        itemBuilder: (BuildContext, index) {
-                          return UserItem(
-                            record: images[index],
-                            prog: false,
-                            index: index,
-                          );
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
                         },
-                        itemCount: images.length,
-                        shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
-                        separatorBuilder: (BuildContext context, int index) =>
-                            const Divider(
-                          color: COLOR_BACK_GROUND,
+                        child: LimitedBox(
+                          child: SvgPicture.asset(
+                            back,
+                            color: Colors.black,
+                            width: 40,
+                            height: 40,
+                            theme: const SvgTheme(
+                                currentColor: null, fontSize: 12, xHeight: 6),
+                          ),
+                          maxHeight: 40,
+                          maxWidth: 40,
                         ),
-                        scrollDirection: Axis.vertical,
-                      )),
-                )
-              ]),
+                      ),
+                    ),
+                    addHorizontalSpace(45),
+                    Text(
+                      'Users',
+                      textAlign: TextAlign.start,
+                      style: themeData.textTheme.headline1,
+                    ),
+                  ]),
+              addVerticalSpace(5),
+              Padding(
+                padding: sidePadding,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Total:",
+                      style: themeData.textTheme.headline2,
+                    ),
+                    Text(
+                      images.length.toString(),
+                      style: themeData.textTheme.headline1,
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                  padding: sidePadding,
+                  child: const Divider(
+                    height: 25,
+                    thickness: 1,
+                    color: Colors.black,
+                  )),
+              Expanded(
+                child: Padding(
+                    padding: sidePadding,
+                    child: ListView.separated(
+                      itemBuilder: (BuildContext, index) {
+                        return UserItem(
+                          record: images[index],
+                          prog: false,
+                          index: index,
+                        );
+                      },
+                      itemCount: images.length,
+                      shrinkWrap: true,
+                      physics: BouncingScrollPhysics(),
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const Divider(
+                        color: COLOR_BACK_GROUND,
+                      ),
+                      scrollDirection: Axis.vertical,
+                    )),
+              )
             ]),
-          ),
+          ]),
         ),
       ),
     );

@@ -1,16 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 //import 'package:flutter_svg/svg.dart';
 import 'package:tulibumu/custom/BorderIcon.dart';
+import 'package:tulibumu/screens/LoginScreen.dart';
+import 'package:tulibumu/screens/NewLoanPage.dart';
 import 'package:tulibumu/utils/constants.dart';
+import 'package:tulibumu/screens/UserPage.dart';
+import 'package:tulibumu/screens/AddLoan.dart';
 import 'package:tulibumu/utils/widget_functions.dart';
-
-import 'loginScreen.dart';
 
 class MyDrawer extends StatelessWidget {
   final String people = 'assets/svgs/people.svg';
   final String usr = 'assets/svgs/users.svg';
+
+  Future<void> ResetUser() async {
+    const storage = FlutterSecureStorage();
+    await storage.deleteAll();
+    //print(await storage.read(key: "token"));
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
@@ -119,7 +129,10 @@ class MyDrawer extends StatelessWidget {
               "All Users",
               style: TextStyle(fontSize: 18),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const UserPage()));
+            },
           ),
           ListTile(
             leading: Icon(Icons.info),
@@ -144,8 +157,9 @@ class MyDrawer extends StatelessWidget {
               style: TextStyle(fontSize: 18),
             ),
             onTap: () async {
-              //await FirebaseAuth.instance.signOut();
-              //  Navigator.of(context).pop();
+              ResetUser().then((value) => Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const LoginScreen())));
             },
           ),
           const Padding(
@@ -160,9 +174,9 @@ class MyDrawer extends StatelessWidget {
               "New loans",
               style: TextStyle(fontSize: 18),
             ),
-            onTap: () async {
-              //await FirebaseAuth.instance.signOut();
-              //  Navigator.of(context).pop();
+            onTap: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const NewLoanPage()));
             },
           ),
           ListTile(
@@ -170,9 +184,9 @@ class MyDrawer extends StatelessWidget {
               "Add loan",
               style: TextStyle(fontSize: 18),
             ),
-            onTap: () async {
-              //await FirebaseAuth.instance.signOut();
-              //  Navigator.of(context).pop();
+            onTap: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const AddLoan()));
             },
           ),
         ],
