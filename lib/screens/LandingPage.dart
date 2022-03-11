@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tulibumu/custom/BorderIcon.dart';
 import 'package:tulibumu/custom/OptionButton.dart';
 import 'package:tulibumu/screens/DetailsPage.dart';
 import 'package:tulibumu/screens/PaymentsPage.dart';
+import 'package:http/http.dart' as http;
 
 //import 'package:tulibumu/screens/DetailPage.dart';
 //import 'package:tulibumu/utils/DialogHelper.dart';
@@ -28,12 +31,19 @@ class LandingPage extends StatefulWidget {
 class LandingPage_ extends State<LandingPage> {
   late int chosen = 1;
   bool logged_in = false;
-  static const storage = FlutterSecureStorage();
+  double Equity = 0;
+  String error = "";
+
+  List<dynamic> AllLoans = [];
+  String loans_msg = "";
+
+  bool loading = false;
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<void> getState() async {
-    const storage = FlutterSecureStorage();
-    var _token = await storage.read(key: "token");
+    final prefs = await SharedPreferences.getInstance();
+    final String? _token = prefs.getString('token');
     if (_token.toString().isNotEmpty) {
       // stay
       logged_in = true;
@@ -44,11 +54,85 @@ class LandingPage_ extends State<LandingPage> {
     // print(logged_in);
   }
 
+  Future<void> SetEquity() async {
+    String url = '$BaseUrl/api/equity/';
+
+    await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    ).then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+      //check status code
+      final parsed = json.decode(res) as Map<String, dynamic>;
+      if (statusCode == 200) {
+        setState(() {
+          Equity = parsed["total"];
+        });
+      } else if (statusCode != 200) {
+        showText('Equity failed to fetch, trying again');
+        //SetEquity();
+        setState(() {
+          error = "No Internet";
+        });
+      }
+    });
+  }
+
+  Future<void> IntialLoans() async {
+    String url = '$BaseUrl/api/loans/';
+    setState(() {
+      loading = true;
+    });
+
+    await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    ).then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+      //check status code
+      final parsed = json.decode(res) as Map<String, dynamic>;
+      if (statusCode == 200) {
+        //double
+        if (parsed["message"] != null) {
+          setState(() {
+            loans_msg = parsed["message"];
+          });
+        } else if (parsed["data"] != null) {
+          setState(() {
+            AllLoans = AllLoans + parsed["data"];
+          });
+        }
+        setState(() {
+          loading = false;
+        });
+      } else if (statusCode != 200) {
+        showText(
+            'Loans failed to fetch, trying again with internet connection');
+        //SetEquity();
+        setState(() {
+          loans_msg = "Something went wrong";
+        });
+        setState(() {
+          loading = false;
+        });
+      }
+    });
+    //  print(AllLoans);
+  }
+
   @override
   void initState() {
     super.initState();
     chosen = 1;
     getState();
+    SetEquity();
+    IntialLoans();
   }
 
   List<Map<String, dynamic>> images = [
@@ -199,12 +283,24 @@ class LandingPage_ extends State<LandingPage> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            "300,000,000",
-                            style: themeData.textTheme.headline1,
-                          ),
-                        ),
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: Equity == 0 && error.isEmpty
+                                ? Text(
+                                    "loading...",
+                                    style: themeData.textTheme.bodyText1,
+                                  )
+                                : Equity > 0
+                                    ? Text(
+                                        Equity.toString() + " " + "/=",
+                                        style: themeData.textTheme.headline1,
+                                      )
+                                    : error.isNotEmpty && Equity == 0
+                                        ? Text(
+                                            error,
+                                            style:
+                                                themeData.textTheme.bodyText1,
+                                          )
+                                        : null),
                       ],
                     ),
                     Padding(
@@ -302,28 +398,45 @@ class LandingPage_ extends State<LandingPage> {
                           color: Colors.black,
                         )),
                     if (chosen == 1)
-                      Expanded(
-                        child: Padding(
-                            padding: sidePadding,
-                            child: ListView.separated(
-                              itemBuilder: (BuildContext, index) {
-                                return LoanItem(
-                                  record: images[index],
-                                  user: false,
-                                  choice: chosen,
-                                );
-                              },
-                              itemCount: images.length,
-                              shrinkWrap: true,
-                              physics: BouncingScrollPhysics(),
-                              separatorBuilder:
-                                  (BuildContext context, int index) =>
-                                      const Divider(
-                                color: COLOR_BACK_GROUND,
-                              ),
-                              scrollDirection: Axis.vertical,
-                            )),
-                      )
+                      if (loading)
+                        Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 5,
+                            backgroundColor: Colors.green,
+                            valueColor: new AlwaysStoppedAnimation<Color>(
+                                Colors.yellow),
+                          ),
+                        )
+                      else if (AllLoans.length > 0 && loans_msg.isEmpty)
+                        Expanded(
+                          child: Padding(
+                              padding: sidePadding,
+                              child: ListView.separated(
+                                itemBuilder: (BuildContext, index) {
+                                  return LoanItem(
+                                    record: AllLoans[index],
+                                    user: false,
+                                    choice: chosen,
+                                  );
+                                },
+                                itemCount: AllLoans.length,
+                                shrinkWrap: true,
+                                physics: BouncingScrollPhysics(),
+                                separatorBuilder:
+                                    (BuildContext context, int index) =>
+                                        const Divider(
+                                  color: COLOR_BACK_GROUND,
+                                ),
+                                scrollDirection: Axis.vertical,
+                              )),
+                        )
+                      else
+                        Center(
+                          child: Text(
+                            loans_msg,
+                            style: themeData.textTheme.headline5,
+                          ),
+                        )
                     else if (chosen == 2)
                       Expanded(
                         child: Padding(
@@ -634,9 +747,9 @@ class LoanItem extends StatelessWidget {
                                   style: themeData.textTheme.bodyText1,
                                 ),
                                 Text(
-                                  record["started"].toString(),
+                                  " ${dd.format(new DateTime.fromMicrosecondsSinceEpoch(record["started"]["seconds"] * 1000999))}",
                                   textAlign: TextAlign.end,
-                                  style: themeData.textTheme.bodyText1,
+                                  style: themeData.textTheme.subtitle2,
                                 ),
                               ],
                             ),

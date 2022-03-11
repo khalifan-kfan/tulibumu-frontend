@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:flutter_svg/svg.dart';
 import 'package:tulibumu/custom/BorderIcon.dart';
 import 'package:tulibumu/screens/LoginScreen.dart';
@@ -16,8 +16,10 @@ class MyDrawer extends StatelessWidget {
   final String usr = 'assets/svgs/users.svg';
 
   Future<void> ResetUser() async {
-    const storage = FlutterSecureStorage();
-    await storage.deleteAll();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    await prefs.remove('role');
+    await prefs.remove('fullName');
     //print(await storage.read(key: "token"));
   }
 

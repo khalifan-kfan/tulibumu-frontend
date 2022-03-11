@@ -12,6 +12,7 @@ const MY_SECRET_API_KEY = "";
 const MY_SECRET_SUBSCRIPTION_KEY = "";
 const MYSECRET_USER_ID = "";
 const ENCODED = "";
+const BaseUrl = "https://tulibumu-backend.herokuapp.com";
 
 const TextTheme TEXT_THEME_DEFAULT = TextTheme(
     headline1: TextStyle(
@@ -38,8 +39,8 @@ const TextTheme TEXT_THEME_DEFAULT = TextTheme(
         height: 1.5),
     subtitle1: TextStyle(
         color: COLOR_BLACK, fontSize: 12, fontWeight: FontWeight.w400),
-    subtitle2: TextStyle(
-        color: COLOR_GREY, fontSize: 12, fontWeight: FontWeight.w400));
+    subtitle2:
+        TextStyle(color: COLOR_GREY, fontSize: 9, fontWeight: FontWeight.w400));
 
 const TextTheme TEXT_THEME_SMALL = TextTheme(
     headline1: TextStyle(

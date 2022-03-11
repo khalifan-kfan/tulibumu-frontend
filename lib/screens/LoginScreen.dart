@@ -1,7 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:flutter/services.dart';
 import 'package:tulibumu/custom/BorderIcon.dart';
 import 'package:tulibumu/main.dart';
@@ -9,6 +9,7 @@ import 'package:tulibumu/main.dart';
 import 'package:tulibumu/screens/Landingpage.dart';
 import 'package:tulibumu/utils/constants.dart';
 import 'package:tulibumu/utils/widget_functions.dart';
+import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -24,48 +25,55 @@ class _loginPageState extends State<LoginScreen> {
 
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
   final String back = 'assets/svgs/back.svg';
+  bool isLoading = false;
 
-  Future<void> SetUser() async {
-    const storage = FlutterSecureStorage();
-    await storage.write(key: "token", value: "tokeN");
-    await storage.write(key: "fullname", value: "token jl");
-    await storage.write(key: "contact", value: "0909909877");
-    //print(await storage.read(key: "token"));
+  Future<void> SetUser(Map<String, dynamic> data) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', data["token"]);
+    await prefs.setString('fullName', data["fullName"]);
+    await prefs.setString('role', data["role"]);
+    await prefs.setString('id', data["id"]);
   }
 
   Future<void> SignInUser(
       String memail, String mpassword, BuildContext context) async {
-    showText("Tusanyuse okulaba ;-)");
-    SetUser().then((value) => Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => LandingPage())));
+    String url = '$BaseUrl/api/users/login';
+    setState(() {
+      isLoading = true;
+    });
 
-    // try {
-    // call api
+    await http
+        .post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(
+          <String, dynamic>{"contact": memail, "password": mpassword}),
+    )
+        .then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+      //check status code
+      final parsed = json.decode(res) as Map<String, dynamic>;
+      if (statusCode == 200) {
+        //print("ACCEPTED" + statusCode.toString());
+        // track transation message
+        showText("Tusanyuse okulaba ;-)");
 
-    //   if (userCredential.user != null) {
-    //     // back to landing page
-    //     showText("Tusanyuse okulaba ;-)");
-    //      Navigator.of(context).push(MaterialPageRoute(
-    //        builder: (context) => LandingPage()));
-    //     //main();
+        SetUser(parsed["data"]).then((value) => Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const LandingPage())));
 
-    //   } else {
-    //     // something went wrong
-    //     showText("somewthing went wrong");
-    //     showText("somewthing went wrong");
-    //   }
-    // } on FirebaseAuthException catch (e) {
-    //   if (e.code == 'user-not-found') {
-    //     print("no such user");
-    //     showText(e.toString());
-    //   } else if (e.code == 'wrong-password') {
-    //     print('Wrong password provided for that user.');
-    //     showText(e.toString());
-    //   }
-    // } catch (e) {
-    //   showText(e.toString());
-    //   print(e);
-    // }
+        setState(() {
+          isLoading = false;
+        });
+      } else if (statusCode != 200) {
+        showText('login failed:' + " " + parsed["message"]);
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
   }
 
   void showText(String msg) {
@@ -212,32 +220,42 @@ class _loginPageState extends State<LoginScreen> {
                               ],
                             ),
                             addVerticalSpace(20),
-                            Column(
-                              children: <Widget>[
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5)),
-                                      minimumSize: const Size(350, 50),
-                                      backgroundColor: Colors.green),
-                                  onPressed: () {
-                                    if (formkey.currentState!.validate()) {
-                                      // login
-                                      SignInUser(
-                                          _contact.text, _pass.text, context);
-                                    } else {
-                                      showText("Fill the fields correctly");
-                                    }
-                                  },
-                                  child: const Text(
-                                    "Login",
-                                    style: TextStyle(
-                                        fontSize: 20, color: COLOR_WHITE),
-                                  ),
-                                ),
-                              ],
-                            )
+                            isLoading
+                                ? CircularProgressIndicator(
+                                    strokeWidth: 5,
+                                    backgroundColor: Colors.green,
+                                    valueColor:
+                                        new AlwaysStoppedAnimation<Color>(
+                                            Colors.yellow),
+                                  )
+                                : Column(
+                                    children: <Widget>[
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(5)),
+                                            minimumSize: const Size(350, 50),
+                                            backgroundColor: Colors.green),
+                                        onPressed: () {
+                                          if (formkey.currentState!
+                                              .validate()) {
+                                            // login
+                                            SignInUser(_contact.text,
+                                                _pass.text, context);
+                                          } else {
+                                            showText(
+                                                "Fill the fields correctly");
+                                          }
+                                        },
+                                        child: const Text(
+                                          "Login",
+                                          style: TextStyle(
+                                              fontSize: 20, color: COLOR_WHITE),
+                                        ),
+                                      ),
+                                    ],
+                                  )
                           ],
                         )),
                   ),
