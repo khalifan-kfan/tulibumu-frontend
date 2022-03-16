@@ -1,19 +1,21 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:flutter_svg/svg.dart';
-import 'package:tulibumu/custom/BorderIcon.dart';
+
+import 'package:tulibumu/screens/AddUser.dart';
 import 'package:tulibumu/screens/LoginScreen.dart';
 import 'package:tulibumu/screens/NewLoanPage.dart';
 import 'package:tulibumu/utils/constants.dart';
 import 'package:tulibumu/screens/UserPage.dart';
 import 'package:tulibumu/screens/AddLoan.dart';
-import 'package:tulibumu/utils/widget_functions.dart';
 
 class MyDrawer extends StatelessWidget {
   final String people = 'assets/svgs/people.svg';
   final String usr = 'assets/svgs/users.svg';
+
+  final dynamic user;
+
+  const MyDrawer({Key? key, this.user}) : super(key: key);
 
   Future<void> ResetUser() async {
     final prefs = await SharedPreferences.getInstance();
@@ -26,12 +28,13 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
+    // print(user);
     return Drawer(
       child: Column(
         children: [
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             color: COLOR_BACK_GROUND,
             child: Center(
               child: Column(
@@ -164,35 +167,57 @@ class MyDrawer extends StatelessWidget {
                       builder: (context) => const LoginScreen())));
             },
           ),
-          const Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: Divider(
-              thickness: 1,
-              color: Colors.black,
+          if (user != null)
+            const Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Divider(
+                thickness: 1,
+                color: Colors.black,
+              ),
             ),
-          ),
-          ListTile(
-            title: const Text(
-              "New loans",
-              style: TextStyle(fontSize: 18),
+          if (user!["role"] == "treasurer" || user!["role"] == "admin")
+            ListTile(
+              title: const Text(
+                "New loans",
+                style: TextStyle(fontSize: 18),
+              ),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const NewLoanPage()));
+              },
             ),
-            onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const NewLoanPage()));
-            },
-          ),
-          ListTile(
-            title: const Text(
-              "Add loan",
-              style: TextStyle(fontSize: 18),
+          if (user!["role"] == "admin" || user!["role"] == "officer")
+            ListTile(
+              title: const Text(
+                "Add loan",
+                style: TextStyle(fontSize: 18),
+              ),
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const AddLoan()));
+              },
             ),
-            onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const AddLoan()));
-            },
-          ),
+          if (user!["role"] == "treasurer" ||
+              user!["role"] == "officer" ||
+              user!["role"] == "admin")
+            ListTile(
+              title: const Text(
+                "Add User",
+                style: TextStyle(fontSize: 18),
+              ),
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const AddUser()));
+              },
+            ),
         ],
       ),
     );
+  }
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    throw UnimplementedError();
   }
 }

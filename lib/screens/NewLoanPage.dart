@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:tulibumu/utils/constants.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import 'package:tulibumu/utils/widget_functions.dart';
+
+import 'LandingPage.dart';
+import 'LoginScreen.dart';
 
 class NewLoanPage extends StatefulWidget {
   const NewLoanPage({Key? key}) : super(key: key);
@@ -17,29 +22,78 @@ class NewLoanPage extends StatefulWidget {
 class _State extends State<NewLoanPage> {
   final String back = 'assets/svgs/back.svg';
 
-  List<Map<String, dynamic>> images = [
-    {
-      "id": "011",
-      "amount": 70005544,
-      "to": "Muwonge khalifsn",
-      "to_id": "003403",
-      "approver": ["hfdjf", "hfgi", "dsiuvh"],
-      "state": "active",
-      "loan_time": 10,
-      "started": 0,
-      "intrest": 0.025,
-      "monthly_pay": 94090303,
-      "cashed": true,
-      "penalty_rate": 0.035,
-      "penalty_rate_on": "monthly_pay",
-      "fine": 0,
-      "confirmer": "julz",
-      "cash_returned": 44230234,
-      "months_count": 0,
-      "months_paid": 0,
-      "return_total": 4738473472
-    },
-  ];
+  bool loading = false;
+  String all_msg = "";
+  Map<String, dynamic>? Myuser;
+  List<dynamic> AllNewLoans = [];
+  @override
+  void initState() {
+    AllLoans();
+    getState();
+    super.initState();
+  }
+
+  Future<void> getState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? _token = prefs.getString('token') ?? "";
+    if (_token.toString().isNotEmpty) {
+      // stay
+      Myuser = {
+        "id": prefs.getString('id') ?? "",
+        "token": _token ?? "",
+        "fullName": prefs.getString('fullName') ?? "",
+        "role": prefs.getString('role') ?? ""
+      };
+    } else {
+      //login page
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => const LoginScreen()));
+    }
+  }
+
+  Future<void> AllLoans() async {
+    String url = '$BaseUrl/api/loans/new/';
+
+    setState(() {
+      loading = true;
+    });
+    await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    ).then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+      //check status code
+      final parsed = json.decode(res) as Map<String, dynamic>;
+      if (statusCode == 200) {
+        //double
+        if (parsed["message"] != null) {
+          setState(() {
+            all_msg = parsed["message"];
+          });
+        } else if (parsed["data"] != null) {
+          setState(() {
+            AllNewLoans = AllNewLoans + parsed["data"];
+          });
+        }
+        setState(() {
+          loading = false;
+        });
+      } else if (statusCode != 200) {
+        showText(
+            'Loans failed to fetch, trying again with internet connection');
+        //SetEquity();
+        setState(() {
+          all_msg = "Something went wrong";
+        });
+        setState(() {
+          loading = false;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,26 +148,43 @@ class _State extends State<NewLoanPage> {
                     thickness: 1,
                     color: Colors.black,
                   )),
-              Expanded(
-                child: Padding(
-                    padding: sidePadding,
-                    child: ListView.separated(
-                      itemBuilder: (BuildContext, index) {
-                        return LoanItem(
-                          record: images[index],
-                          user: false,
-                        );
-                      },
-                      itemCount: images.length,
-                      shrinkWrap: true,
-                      physics: BouncingScrollPhysics(),
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const Divider(
-                        color: COLOR_BACK_GROUND,
-                      ),
-                      scrollDirection: Axis.vertical,
-                    )),
-              )
+              if (loading)
+                Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 5,
+                    backgroundColor: Colors.green,
+                    valueColor:
+                        new AlwaysStoppedAnimation<Color>(Colors.yellow),
+                  ),
+                )
+              else if (AllNewLoans.length > 0 && all_msg.isEmpty)
+                Expanded(
+                  child: Padding(
+                      padding: sidePadding,
+                      child: ListView.separated(
+                        itemBuilder: (BuildContext, index) {
+                          return LoanItem(
+                              record: AllNewLoans[index],
+                              user: false,
+                              currentUser: Myuser);
+                        },
+                        itemCount: AllNewLoans.length,
+                        shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
+                        separatorBuilder: (BuildContext context, int index) =>
+                            const Divider(
+                          color: COLOR_BACK_GROUND,
+                        ),
+                        scrollDirection: Axis.vertical,
+                      )),
+                )
+              else
+                Center(
+                  child: Text(
+                    all_msg,
+                    style: themeData.textTheme.headline5,
+                  ),
+                )
             ]),
           ]),
         ),
@@ -122,11 +193,60 @@ class _State extends State<NewLoanPage> {
   }
 }
 
-class LoanItem extends StatelessWidget {
+class LoanItem extends StatefulWidget {
   final dynamic record;
   final bool user;
+  final Map<String, dynamic>? currentUser;
 
-  const LoanItem({Key? key, this.record, required this.user}) : super(key: key);
+  const LoanItem(
+      {Key? key, this.record, required this.user, required this.currentUser})
+      : super(key: key);
+
+  @override
+  _State__ createState() => _State__();
+}
+
+class _State__ extends State<LoanItem> {
+  bool isLoading = false;
+
+  Future<void> CashLoan() async {
+    String url = '$BaseUrl/api/loans/cashout/' + widget.record["id"];
+    setState(() {
+      isLoading = true;
+    });
+
+    await http
+        .put(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, dynamic>{
+        "confirmer_id": widget.currentUser?["id"],
+        "name": widget.currentUser?["fullName"],
+      }),
+    )
+        .then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+      //check status code
+      final parsed = json.decode(res) as Map<String, dynamic>;
+      if (statusCode == 201) {
+        showText("Loan cashed successfullly");
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const LandingPage()));
+        setState(() {
+          isLoading = false;
+        });
+      } else if (statusCode != 201) {
+        showText('Failed:' + " " + parsed["message"]);
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     //DateTime record_day = record["date"].toDate();
@@ -152,7 +272,7 @@ class LoanItem extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: !user
+                children: !widget.user
                     ? [
                         Expanded(
                           flex: 6,
@@ -167,7 +287,7 @@ class LoanItem extends StatelessWidget {
                                 ),
                                 addHorizontalSpace(1),
                                 Text(
-                                  record["amount"].toString() + ",",
+                                  widget.record["amount"].toString() + ",",
                                   textAlign: TextAlign.end,
                                   style: themeData.textTheme.bodyText1,
                                 ),
@@ -181,7 +301,7 @@ class LoanItem extends StatelessWidget {
                             padding: const EdgeInsets.only(
                                 left: 2, right: 5, top: 10),
                             child: Text(
-                              record["to"],
+                              widget.record["to"],
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1,
                             ),
@@ -203,7 +323,7 @@ class LoanItem extends StatelessWidget {
                               ),
                               addHorizontalSpace(1),
                               Text(
-                                record["amount"].toString() + "/=",
+                                widget.record["amount"].toString() + "/=",
                                 textAlign: TextAlign.end,
                                 style: themeData.textTheme.bodyText1,
                               ),
@@ -237,7 +357,7 @@ class LoanItem extends StatelessWidget {
                                     style: themeData.textTheme.bodyText1,
                                   ),
                                   Text(
-                                    record["loan_time"].toString(),
+                                    widget.record["loan_time"].toString(),
                                     textAlign: TextAlign.end,
                                     style: themeData.textTheme.bodyText1,
                                   ),
@@ -254,7 +374,7 @@ class LoanItem extends StatelessWidget {
                                     style: themeData.textTheme.bodyText1,
                                   ),
                                   Text(
-                                    record["return_total"].toString(),
+                                    widget.record["return_total"].toString(),
                                     textAlign: TextAlign.end,
                                     style: themeData.textTheme.bodyText1,
                                   ),
@@ -271,7 +391,7 @@ class LoanItem extends StatelessWidget {
                                     style: themeData.textTheme.bodyText1,
                                   ),
                                   Text(
-                                    record["monthly_pay"].toString(),
+                                    widget.record["monthly_pay"].toString(),
                                     textAlign: TextAlign.end,
                                     style: themeData.textTheme.bodyText1,
                                   ),
@@ -288,7 +408,7 @@ class LoanItem extends StatelessWidget {
                                     style: themeData.textTheme.bodyText1,
                                   ),
                                   Text(
-                                    record["cash_returned"].toString(),
+                                    widget.record["cash_returned"].toString(),
                                     textAlign: TextAlign.end,
                                     style: themeData.textTheme.bodyText1,
                                   ),
@@ -305,7 +425,7 @@ class LoanItem extends StatelessWidget {
                                     style: themeData.textTheme.bodyText1,
                                   ),
                                   Text(
-                                    record["fine"].toString(),
+                                    widget.record["fine"].toString(),
                                     textAlign: TextAlign.end,
                                     style: themeData.textTheme.bodyText1,
                                   ),
@@ -332,17 +452,17 @@ class LoanItem extends StatelessWidget {
                                 style: themeData.textTheme.bodyText1,
                               ),
                               Text(
-                                  record["state"] == "complete"
+                                  widget.record["state"] == "complete"
                                       ? "done"
-                                      : record["state"],
+                                      : widget.record["state"],
                                   textAlign: TextAlign.end,
-                                  style: record["state"]! == "active"
+                                  style: widget.record["state"]! == "active"
                                       ? const TextStyle(
                                           color: Colors.green,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500,
                                           height: 1.5)
-                                      : record["state"]! == "due"
+                                      : widget.record["state"]! == "due"
                                           ? const TextStyle(
                                               color: Colors.red,
                                               fontSize: 12,
@@ -361,7 +481,7 @@ class LoanItem extends StatelessWidget {
                                 style: themeData.textTheme.bodyText1,
                               ),
                               Text(
-                                record["started"].toString(),
+                                widget.record["started"].toString(),
                                 textAlign: TextAlign.end,
                                 style: themeData.textTheme.bodyText1,
                               ),
@@ -377,7 +497,7 @@ class LoanItem extends StatelessWidget {
                                 style: themeData.textTheme.bodyText1,
                               ),
                               Text(
-                                record["months_paid"].toString(),
+                                widget.record["months_paid"].toString(),
                                 textAlign: TextAlign.end,
                                 style: themeData.textTheme.bodyText1,
                               ),
@@ -393,7 +513,7 @@ class LoanItem extends StatelessWidget {
                                 style: themeData.textTheme.bodyText1,
                               ),
                               Text(
-                                record["months_count"].toString(),
+                                widget.record["months_count"].toString(),
                                 textAlign: TextAlign.end,
                                 style: themeData.textTheme.bodyText1,
                               ),
@@ -434,7 +554,52 @@ class LoanItem extends StatelessWidget {
         ),
         addVerticalSpace(10),
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            // CashLoan();
+            showModalBottomSheet<void>(
+                context: context,
+                builder: (BuildContext context) {
+                  return Container(
+                    height: 200,
+                    color: Colors.amber,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          const Text(
+                              'Confirm if you really want to cash this loan',
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.5)),
+                          addVerticalSpace(14),
+                          if (isLoading)
+                            Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 5,
+                                backgroundColor: Colors.green,
+                                valueColor: new AlwaysStoppedAnimation<Color>(
+                                    Colors.yellow),
+                              ),
+                            )
+                          else
+                            ElevatedButton(
+                              child: const Text('Confirm'),
+                              onPressed: () => CashLoan(),
+                            ),
+                          addVerticalSpace(7),
+                          ElevatedButton(
+                            child: const Text('Cancel'),
+                            onPressed: () => Navigator.pop(context),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                });
+          },
           child: Container(
             decoration: BoxDecoration(
               color: COLOR_CLICK_GREEN,

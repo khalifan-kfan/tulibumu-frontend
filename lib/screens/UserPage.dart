@@ -1,10 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:tulibumu/utils/constants.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 import 'package:tulibumu/utils/widget_functions.dart';
 
 class UserPage extends StatefulWidget {
@@ -16,45 +15,97 @@ class UserPage extends StatefulWidget {
 
 class _State_ extends State<UserPage> {
   final String back = 'assets/svgs/back.svg';
+  bool loading = false;
+  String all_msg = "";
+  List<dynamic> AllUsers = [];
+  @override
+  void initState() {
+    AUsers();
+    super.initState();
+  }
 
-  List<Map<String, dynamic>> images = [
-    {
-      "id": "011",
-      "fullname": "Muwonge khalifan",
-      "role": "member",
-      "contact": "0707098765"
-    },
-    {
-      "id": "011",
-      "fullname": "Muwonge khalifan",
-      "role": "member",
-      "contact": "0707098765"
-    },
-    {
-      "id": "011",
-      "fullname": "Muwonge khalifan",
-      "role": "member",
-      "contact": "0707098765"
-    },
-    {
-      "id": "012",
-      "fullname": "Muwonge jk",
-      "role": "member",
-      "contact": "0707098965"
-    },
-    {
-      "id": "012",
-      "fullname": "Khali jk",
-      "role": "member",
-      "contact": "0707098965"
-    },
-    {
-      "id": "012",
-      "fullname": "Khali jk",
-      "role": "member",
-      "contact": "0707098965"
-    },
-  ];
+  // List<Map<String, dynamic>> images = [
+  //   {
+  //     "id": "011",
+  //     "fullname": "Muwonge khalifan",
+  //     "role": "member",
+  //     "contact": "0707098765"
+  //   },
+  //   {
+  //     "id": "011",
+  //     "fullname": "Muwonge khalifan",
+  //     "role": "member",
+  //     "contact": "0707098765"
+  //   },
+  //   {
+  //     "id": "011",
+  //     "fullname": "Muwonge khalifan",
+  //     "role": "member",
+  //     "contact": "0707098765"
+  //   },
+  //   {
+  //     "id": "012",
+  //     "fullname": "Muwonge jk",
+  //     "role": "member",
+  //     "contact": "0707098965"
+  //   },
+  //   {
+  //     "id": "012",
+  //     "fullname": "Khali jk",
+  //     "role": "member",
+  //     "contact": "0707098965"
+  //   },
+  //   {
+  //     "id": "012",
+  //     "fullname": "Khali jk",
+  //     "role": "member",
+  //     "contact": "0707098965"
+  //   },
+  // ];
+  Future<void> AUsers() async {
+    String url = '$BaseUrl/api/users/all/';
+
+    setState(() {
+      loading = true;
+    });
+    await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    ).then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+      //check status code
+      final parsed = json.decode(res) as Map<String, dynamic>;
+      if (statusCode == 200) {
+        //double
+        if (parsed["message"] != null) {
+          setState(() {
+            all_msg = parsed["message"];
+          });
+        } else if (parsed["data"] != null) {
+          setState(() {
+            AllUsers = AllUsers + parsed["data"];
+          });
+        }
+        setState(() {
+          loading = false;
+        });
+      } else if (statusCode != 200) {
+        showText(
+            'Loans failed to fetch, trying again with internet connection');
+        //SetEquity();
+        setState(() {
+          all_msg = "Something went wrong";
+        });
+        setState(() {
+          loading = false;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -111,7 +162,7 @@ class _State_ extends State<UserPage> {
                       style: themeData.textTheme.headline2,
                     ),
                     Text(
-                      images.length.toString(),
+                      AllUsers.length.toString(),
                       style: themeData.textTheme.headline1,
                     ),
                   ],
@@ -124,27 +175,44 @@ class _State_ extends State<UserPage> {
                     thickness: 1,
                     color: Colors.black,
                   )),
-              Expanded(
-                child: Padding(
-                    padding: sidePadding,
-                    child: ListView.separated(
-                      itemBuilder: (BuildContext, index) {
-                        return UserItem(
-                          record: images[index],
-                          prog: false,
-                          index: index,
-                        );
-                      },
-                      itemCount: images.length,
-                      shrinkWrap: true,
-                      physics: BouncingScrollPhysics(),
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const Divider(
-                        color: COLOR_BACK_GROUND,
-                      ),
-                      scrollDirection: Axis.vertical,
-                    )),
-              )
+              if (loading)
+                Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 5,
+                    backgroundColor: Colors.green,
+                    valueColor:
+                        new AlwaysStoppedAnimation<Color>(Colors.yellow),
+                  ),
+                )
+              else if (AllUsers.length > 0 && all_msg.isEmpty)
+                Expanded(
+                  child: Padding(
+                      padding: sidePadding,
+                      child: ListView.separated(
+                        itemBuilder: (BuildContext, index) {
+                          return UserItem(
+                            record: AllUsers[index],
+                            prog: false,
+                            index: index,
+                          );
+                        },
+                        itemCount: AllUsers.length,
+                        shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
+                        separatorBuilder: (BuildContext context, int index) =>
+                            const Divider(
+                          color: COLOR_BACK_GROUND,
+                        ),
+                        scrollDirection: Axis.vertical,
+                      )),
+                )
+              else
+                Center(
+                  child: Text(
+                    all_msg,
+                    style: themeData.textTheme.headline5,
+                  ),
+                )
             ]),
           ]),
         ),
@@ -187,7 +255,7 @@ class UserItem extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: Text(
-                  record["fullname"],
+                  record["fullName"],
                   textAlign: TextAlign.start,
                   style: themeData.textTheme.bodyText1,
                 ),

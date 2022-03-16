@@ -30,12 +30,17 @@ class LandingPage extends StatefulWidget {
 
 class LandingPage_ extends State<LandingPage> {
   late int chosen = 1;
-  bool logged_in = false;
+
   double Equity = 0;
   String error = "";
+  Map<String, dynamic>? Myuser;
 
   List<dynamic> AllLoans = [];
+  List<dynamic> LiveLoans = [];
+  List<dynamic> AllUserLoans = [];
   String loans_msg = "";
+  String live_loans_msg = "";
+  String all_loans_msg = "";
 
   bool loading = false;
 
@@ -43,15 +48,20 @@ class LandingPage_ extends State<LandingPage> {
 
   Future<void> getState() async {
     final prefs = await SharedPreferences.getInstance();
-    final String? _token = prefs.getString('token');
+    final String? _token = prefs.getString('token') ?? "";
     if (_token.toString().isNotEmpty) {
       // stay
-      logged_in = true;
+      Myuser = {
+        "id": prefs.getString('id') ?? "",
+        "token": _token ?? "",
+        "fullName": prefs.getString('fullName') ?? "",
+        "role": prefs.getString('role') ?? ""
+      };
     } else {
       //login page
-      logged_in = false;
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => const LoginScreen()));
     }
-    // print(logged_in);
   }
 
   Future<void> SetEquity() async {
@@ -105,7 +115,7 @@ class LandingPage_ extends State<LandingPage> {
           });
         } else if (parsed["data"] != null) {
           setState(() {
-            AllLoans = AllLoans + parsed["data"];
+            AllLoans = parsed["data"];
           });
         }
         setState(() {
@@ -126,107 +136,129 @@ class LandingPage_ extends State<LandingPage> {
     //  print(AllLoans);
   }
 
+  Future<void> UserLive() async {
+    String url = '$BaseUrl/api/users/loans/all/' + Myuser!["id"];
+    String _my_id = Myuser!["id"] ?? "";
+
+    if (_my_id.isNotEmpty) {
+      setState(() {
+        loading = true;
+      });
+      await http.get(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+      ).then((http.Response response) {
+        final String res = response.body;
+        final int statusCode = response.statusCode;
+        //check status code
+        final parsed = json.decode(res) as Map<String, dynamic>;
+        if (statusCode == 200) {
+          //double
+          if (parsed["message"] != null) {
+            setState(() {
+              live_loans_msg = parsed["message"];
+            });
+          } else if (parsed["data"] != null) {
+            setState(() {
+              LiveLoans = parsed["data"];
+            });
+          }
+          setState(() {
+            loading = false;
+          });
+        } else if (statusCode == 403) {
+          showText('No active loans for you');
+          //SetEquity();
+          setState(() {
+            live_loans_msg = "No active loans for you";
+          });
+          setState(() {
+            loading = false;
+          });
+        } else {
+          setState(() {
+            live_loans_msg =
+                "Something went wrong, try checking you internet connection";
+          });
+        }
+      });
+    } else {
+      setState(() {
+        live_loans_msg = "Login out and logback in";
+      });
+    }
+    // print(LiveLoans);
+  }
+
+  Future<void> AUserLoans() async {
+    String url = '$BaseUrl/api/users/loans/' + Myuser!["id"];
+    String MyId = Myuser!["id"] ?? "";
+
+    if (MyId.isNotEmpty) {
+      setState(() {
+        loading = true;
+      });
+      await http.get(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+      ).then((http.Response response) {
+        final String res = response.body;
+        final int statusCode = response.statusCode;
+        //check status code
+        final parsed = json.decode(res) as Map<String, dynamic>;
+        if (statusCode == 200) {
+          //double
+          if (parsed["message"] != null) {
+            setState(() {
+              all_loans_msg = parsed["message"];
+            });
+          } else if (parsed["data"] != null) {
+            setState(() {
+              AllUserLoans = parsed["data"];
+            });
+          }
+          setState(() {
+            loading = false;
+          });
+        } else if (statusCode != 200) {
+          showText(
+              'Loans failed to fetch, trying again with internet connection');
+          //SetEquity();
+          setState(() {
+            all_loans_msg = "Something went wrong";
+          });
+          setState(() {
+            loading = false;
+          });
+        }
+      });
+    } else {
+      setState(() {
+        all_loans_msg = "Login out and logback in";
+      });
+    }
+    //print(AllUserLoans);
+  }
+
   @override
   void initState() {
-    super.initState();
     chosen = 1;
     getState();
     SetEquity();
     IntialLoans();
+    super.initState();
   }
-
-  List<Map<String, dynamic>> images = [
-    {
-      "id": "011",
-      "amount": 70005544,
-      "to": "Muwonge khalifsn",
-      "to_id": "003403",
-      "approver": ["hfdjf", "hfgi", "dsiuvh"],
-      "state": "active",
-      "loan_time": 10,
-      "started": 0,
-      "intrest": 0.025,
-      "monthly_pay": 94090303,
-      "cashed": true,
-      "penalty_rate": 0.035,
-      "penalty_rate_on": "monthly_pay",
-      "fine": 0,
-      "confirmer": "julz",
-      "cash_returned": 44230234,
-      "months_count": 0,
-      "months_paid": 0,
-      "return_total": 4738473472
-    },
-    {
-      "id": "013",
-      "amount": 70005544,
-      "to": "Muwonge khalifsn",
-      "to_id": "003403",
-      "approver": ["hfdjf", "hfgi", "dsiuvh"],
-      "state": "due",
-      "loan_time": 10,
-      "started": 0,
-      "intrest": 0.025,
-      "monthly_pay": 94090303,
-      "cashed": true,
-      "penalty_rate": 0.035,
-      "penalty_rate_on": "monthly_pay",
-      "fine": 0,
-      "confirmer": "julz",
-      "cash_returned": 44230234,
-      "months_count": 0,
-      "months_paid": 0,
-      "return_total": 4738473472
-    },
-    {
-      "id": "011",
-      "amount": 70005544,
-      "to": "Muwonge khalifsn",
-      "to_id": "003403",
-      "approver": ["hfdjf", "hfgi", "dsiuvh"],
-      "state": "complete",
-      "loan_time": 10,
-      "started": 0,
-      "intrest": 0.025,
-      "monthly_pay": 94090303,
-      "cashed": true,
-      "penalty_rate": 0.035,
-      "penalty_rate_on": "monthly_pay",
-      "fine": 0,
-      "confirmer": "julz",
-      "cash_returned": 44230234,
-      "months_count": 0,
-      "months_paid": 0,
-      "return_total": 4738473472
-    },
-    {
-      "id": "011",
-      "amount": 70005544,
-      "to": "Muwonge khalifsn",
-      "to_id": "003403",
-      "approver": ["hfdjf", "hfgi", "dsiuvh"],
-      "state": "complete",
-      "loan_time": 10,
-      "started": 0,
-      "intrest": 0.025,
-      "monthly_pay": 94090303,
-      "cashed": true,
-      "penalty_rate": 0.035,
-      "penalty_rate_on": "monthly_pay",
-      "fine": 0,
-      "confirmer": "julz",
-      "cash_returned": 44230234,
-      "months_count": 0,
-      "months_paid": 0,
-      "return_total": 4738473472
-    }
-  ];
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final ThemeData themeData = Theme.of(context);
     double padding = 25;
+
     final sidePadding = EdgeInsets.symmetric(horizontal: padding);
     return WillPopScope(
       onWillPop: () => Future.value(false),
@@ -234,7 +266,9 @@ class LandingPage_ extends State<LandingPage> {
         child: Scaffold(
           key: _scaffoldKey,
           backgroundColor: COLOR_BACK_GROUND,
-          drawer: MyDrawer(),
+          drawer: MyDrawer(
+            user: Myuser ?? {},
+          ),
           body: Container(
             width: size.width,
             height: size.height,
@@ -345,6 +379,7 @@ class LandingPage_ extends State<LandingPage> {
                                 setState(() {
                                   chosen = 2;
                                 });
+                                UserLive();
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -357,7 +392,7 @@ class LandingPage_ extends State<LandingPage> {
                                     horizontal: 20, vertical: 13),
                                 margin: const EdgeInsets.only(left: 20),
                                 child: Text(
-                                  "My Loans",
+                                  "My live Loans",
                                   style: themeData.textTheme.headline5,
                                 ),
                               ),
@@ -367,6 +402,7 @@ class LandingPage_ extends State<LandingPage> {
                                 setState(() {
                                   chosen = 3;
                                 });
+                                AUserLoans();
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -379,7 +415,7 @@ class LandingPage_ extends State<LandingPage> {
                                     horizontal: 20, vertical: 13),
                                 margin: const EdgeInsets.only(left: 20),
                                 child: Text(
-                                  "History",
+                                  "All my Loans",
                                   style: themeData.textTheme.headline5,
                                 ),
                               ),
@@ -414,10 +450,10 @@ class LandingPage_ extends State<LandingPage> {
                               child: ListView.separated(
                                 itemBuilder: (BuildContext, index) {
                                   return LoanItem(
-                                    record: AllLoans[index],
-                                    user: false,
-                                    choice: chosen,
-                                  );
+                                      record: AllLoans[index],
+                                      user: false,
+                                      choice: chosen,
+                                      role: Myuser!["role"]);
                                 },
                                 itemCount: AllLoans.length,
                                 shrinkWrap: true,
@@ -438,51 +474,95 @@ class LandingPage_ extends State<LandingPage> {
                           ),
                         )
                     else if (chosen == 2)
-                      Expanded(
-                        child: Padding(
-                            padding: sidePadding,
-                            child: ListView.separated(
-                              itemBuilder: (BuildContext, index) {
-                                return LoanItem(
-                                  record: images[index],
-                                  user: true,
-                                  choice: chosen,
-                                );
-                              },
-                              itemCount: images.length,
-                              shrinkWrap: true,
-                              physics: BouncingScrollPhysics(),
-                              separatorBuilder:
-                                  (BuildContext context, int index) =>
-                                      const Divider(
-                                color: COLOR_BACK_GROUND,
-                              ),
-                              scrollDirection: Axis.vertical,
-                            )),
-                      )
+                      if (loading)
+                        Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 5,
+                            backgroundColor: Colors.green,
+                            valueColor: new AlwaysStoppedAnimation<Color>(
+                                Colors.yellow),
+                          ),
+                        )
+                      else if (LiveLoans.length > 0 && live_loans_msg.isEmpty)
+                        Expanded(
+                          child: Padding(
+                              padding: sidePadding,
+                              child: ListView.separated(
+                                itemBuilder: (BuildContext, index) {
+                                  return LoanItem(
+                                      record: LiveLoans[index],
+                                      user: true,
+                                      choice: chosen,
+                                      role: Myuser!["role"]);
+                                },
+                                itemCount: LiveLoans.length,
+                                shrinkWrap: true,
+                                physics: BouncingScrollPhysics(),
+                                separatorBuilder:
+                                    (BuildContext context, int index) =>
+                                        const Divider(
+                                  color: COLOR_BACK_GROUND,
+                                ),
+                                scrollDirection: Axis.vertical,
+                              )),
+                        )
+                      else
+                        Center(
+                          child: Text(
+                            live_loans_msg,
+                            style: themeData.textTheme.headline5,
+                          ),
+                        )
                     else if (chosen == 3)
-                      Expanded(
-                        child: Padding(
-                            padding: sidePadding,
-                            child: ListView.separated(
-                              itemBuilder: (BuildContext, index) {
-                                return LoanItem(
-                                  record: images[index],
-                                  user: true,
-                                  choice: chosen,
-                                );
-                              },
-                              itemCount: images.length,
-                              shrinkWrap: true,
-                              physics: BouncingScrollPhysics(),
-                              scrollDirection: Axis.vertical,
-                              separatorBuilder:
-                                  (BuildContext context, int index) =>
-                                      const Divider(
-                                color: COLOR_BACK_GROUND,
-                              ),
-                            )),
-                      ),
+                      if (loading)
+                        Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 5,
+                            backgroundColor: Colors.green,
+                            valueColor: new AlwaysStoppedAnimation<Color>(
+                                Colors.yellow),
+                          ),
+                        )
+                      else if (AllUserLoans.length > 0 && all_loans_msg.isEmpty)
+                        Expanded(
+                          child: Padding(
+                              padding: sidePadding,
+                              child: ListView.separated(
+                                itemBuilder: (BuildContext, index) {
+                                  return LoanItem(
+                                      record: AllUserLoans[index],
+                                      user: true,
+                                      choice: chosen,
+                                      role: Myuser!["role"]);
+                                },
+                                itemCount: AllUserLoans.length,
+                                shrinkWrap: true,
+                                physics: BouncingScrollPhysics(),
+                                scrollDirection: Axis.vertical,
+                                separatorBuilder:
+                                    (BuildContext context, int index) =>
+                                        const Divider(
+                                  color: COLOR_BACK_GROUND,
+                                ),
+                              )),
+                        )
+                      else
+                        Center(
+                          child: Text(
+                            all_loans_msg,
+                            style: themeData.textTheme.headline5,
+                          ),
+                        )
+                    else
+                      Center(
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: Text(
+                            "Logout and log back in",
+                            style: themeData.textTheme.headline5,
+                          ),
+                        ),
+                      )
                   ],
                 ),
                 /*  Positioned(
@@ -509,15 +589,20 @@ class LoanItem extends StatelessWidget {
   final dynamic record;
   final bool user;
   final int choice;
+  final String role;
 
   const LoanItem(
-      {Key? key, this.record, required this.user, required this.choice})
+      {Key? key,
+      this.record,
+      required this.user,
+      required this.choice,
+      required this.role})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
     //DateTime record_day = record["date"].toDate();
     final ThemeData themeData = Theme.of(context);
-
+    // print(role);
     final dd = new DateFormat('dd-MM-yyyy');
     return Column(
       children: [
@@ -616,6 +701,8 @@ class LoanItem extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       "Time:",
@@ -747,7 +834,9 @@ class LoanItem extends StatelessWidget {
                                   style: themeData.textTheme.bodyText1,
                                 ),
                                 Text(
-                                  " ${dd.format(new DateTime.fromMicrosecondsSinceEpoch(record["started"]["seconds"] * 1000999))}",
+                                  record["started"] != "N/A"
+                                      ? " ${dd.format(new DateTime.fromMicrosecondsSinceEpoch(record["started"]["seconds"] * 1000999))}"
+                                      : record["started"],
                                   textAlign: TextAlign.end,
                                   style: themeData.textTheme.subtitle2,
                                 ),
@@ -825,7 +914,8 @@ class LoanItem extends StatelessWidget {
               ]),
         ),
         addVerticalSpace(5),
-        if (choice == 2 || choice == 1)
+        if ((choice == 2 || choice == 1) &&
+            (role == "treasurer" || role == "admin"))
           Column(
             children: <Widget>[
               TextButton(
