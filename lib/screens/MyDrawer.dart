@@ -27,6 +27,7 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(user);
     final ThemeData themeData = Theme.of(context);
     // print(user);
     return Drawer(
@@ -72,7 +73,7 @@ class MyDrawer extends StatelessWidget {
                           style: themeData.textTheme.bodyText2,
                         ),
                         Text(
-                          "Muwonge Khalifan",
+                          user["fullName"],
                           textAlign: TextAlign.end,
                           style: themeData.textTheme.headline5,
                         ),
@@ -102,7 +103,7 @@ class MyDrawer extends StatelessWidget {
                           style: themeData.textTheme.bodyText2,
                         ),
                         Text(
-                          "member",
+                          user["role"],
                           textAlign: TextAlign.end,
                           style: themeData.textTheme.headline5,
                         ),

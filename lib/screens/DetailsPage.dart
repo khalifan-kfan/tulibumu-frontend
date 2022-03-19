@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:tulibumu/screens/PaymentsPage.dart';
 import 'package:tulibumu/utils/constants.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
+
 import 'package:tulibumu/utils/widget_functions.dart';
 
 class DetailsPage extends StatefulWidget {
-  const DetailsPage({Key? key}) : super(key: key);
+  final dynamic record;
+  final String user;
+  const DetailsPage({Key? key, required this.record, required this.user})
+      : super(key: key);
 
   @override
   Details_ createState() {
@@ -19,6 +20,7 @@ class DetailsPage extends StatefulWidget {
 
 class Details_ extends State<DetailsPage> {
   final String back = 'assets/svgs/back.svg';
+  final dd = new DateFormat('dd-MM-yyyy');
 
   List<Map<String, dynamic>> images = [
     {
@@ -43,6 +45,7 @@ class Details_ extends State<DetailsPage> {
       "return_total": 4738473472
     },
   ];
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -102,7 +105,7 @@ class Details_ extends State<DetailsPage> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
-                        images[0]["amount"].toString(),
+                        widget.record["amount"].toString(),
                         style: themeData.textTheme.headline1,
                       ),
                     ),
@@ -131,7 +134,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.headline4,
                           ),
-                          Text(images[0]["to"].toString(),
+                          Text(widget.record["to"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.headline4),
                         ],
@@ -148,7 +151,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["loan_time"].toString(),
+                          Text(widget.record["loan_time"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -165,7 +168,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["state"].toString(),
+                          Text(widget.record["state"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -182,7 +185,10 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["started"].toString(),
+                          Text(
+                              widget.record["started"] != "N/A"
+                                  ? " ${dd.format(new DateTime.fromMicrosecondsSinceEpoch(widget.record["started"]["seconds"] * 1000000))}"
+                                  : widget.record["started"],
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -199,7 +205,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["months_paid"].toString(),
+                          Text(widget.record["months_paid"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -216,7 +222,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["months_count"].toString(),
+                          Text(widget.record["months_count"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -233,7 +239,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["intrest"].toString(),
+                          Text(widget.record["intrest"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -250,7 +256,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["monthly_pay"].toString(),
+                          Text(widget.record["monthly_pay"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -267,7 +273,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["cash_returned"].toString(),
+                          Text(widget.record["cash_returned"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -284,7 +290,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["fine"].toString(),
+                          Text(widget.record["fine"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -301,7 +307,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["return_total"].toString(),
+                          Text(widget.record["return_total"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -318,7 +324,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["penalty_rate"].toString(),
+                          Text(widget.record["penalty_rate"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -335,7 +341,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["penalty_rate_on"].toString(),
+                          Text(widget.record["penalty_rate_on"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -352,7 +358,7 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(images[0]["confirmer"].toString(),
+                          Text(widget.record["confirmer"]["name"].toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -371,13 +377,13 @@ class Details_ extends State<DetailsPage> {
                           ),
                           Column(
                             children: [
-                              Text(images[0]["approver"][0].toString(),
+                              Text(widget.record["approver"][0].toString(),
                                   textAlign: TextAlign.end,
                                   style: themeData.textTheme.bodyText1),
-                              Text(images[0]["approver"][1].toString(),
+                              Text(widget.record["approver"][1].toString(),
                                   textAlign: TextAlign.end,
                                   style: themeData.textTheme.bodyText1),
-                              Text(images[0]["approver"][2].toString(),
+                              Text(widget.record["approver"][2].toString(),
                                   textAlign: TextAlign.end,
                                   style: themeData.textTheme.bodyText1),
                             ],
@@ -389,27 +395,33 @@ class Details_ extends State<DetailsPage> {
                   ]),
                 ),
                 addVerticalSpace(5),
-                Center(
-                  child: Column(
-                    children: <Widget>[
-                      TextButton(
-                        style: TextButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5)),
-                            minimumSize: const Size(300, 40),
-                            backgroundColor: Colors.green),
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const PaymentsPage()));
-                        },
-                        child: const Text(
-                          "Register Payments",
-                          style: TextStyle(fontSize: 14, color: COLOR_WHITE),
+                if (widget.user == "treasurer" ||
+                    widget.user == "admin" ||
+                    widget.record["state"] != "new")
+                  Center(
+                    child: Column(
+                      children: <Widget>[
+                        TextButton(
+                          style: TextButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5)),
+                              minimumSize: const Size(300, 40),
+                              backgroundColor: Colors.green),
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => PaymentsPage(
+                                      record: widget.record,
+                                      user: widget.user,
+                                    )));
+                          },
+                          child: const Text(
+                            "Register Payments",
+                            style: TextStyle(fontSize: 14, color: COLOR_WHITE),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                )
+                      ],
+                    ),
+                  )
               ]),
             ],
           ),

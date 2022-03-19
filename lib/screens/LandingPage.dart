@@ -5,15 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tulibumu/custom/BorderIcon.dart';
-import 'package:tulibumu/custom/OptionButton.dart';
 import 'package:tulibumu/screens/DetailsPage.dart';
 import 'package:tulibumu/screens/PaymentsPage.dart';
 import 'package:http/http.dart' as http;
 
-//import 'package:tulibumu/screens/DetailPage.dart';
-//import 'package:tulibumu/utils/DialogHelper.dart';
 import 'package:tulibumu/utils/constants.dart';
-//import 'package:movies/utils/custom_functions.dart';
 import 'package:tulibumu/utils/widget_functions.dart';
 
 import 'MyDrawer.dart';
@@ -65,7 +61,8 @@ class LandingPage_ extends State<LandingPage> {
   }
 
   Future<void> SetEquity() async {
-    String url = '$BaseUrl/api/equity/';
+    // print('$BaseUrl/api/equity');
+    String url = '$BaseUrl/api/equity';
 
     await http.get(
       Uri.parse(url),
@@ -78,8 +75,9 @@ class LandingPage_ extends State<LandingPage> {
       //check status code
       final parsed = json.decode(res) as Map<String, dynamic>;
       if (statusCode == 200) {
+        print(parsed["total"]);
         setState(() {
-          Equity = parsed["total"];
+          Equity = double.parse(parsed["total"]);
         });
       } else if (statusCode != 200) {
         showText('Equity failed to fetch, trying again');
@@ -138,9 +136,9 @@ class LandingPage_ extends State<LandingPage> {
 
   Future<void> UserLive() async {
     String url = '$BaseUrl/api/users/loans/all/' + Myuser!["id"];
-    String _my_id = Myuser!["id"] ?? "";
+    String MyId = Myuser!["id"] ?? "";
 
-    if (_my_id.isNotEmpty) {
+    if (MyId.isNotEmpty) {
       setState(() {
         loading = true;
       });
@@ -453,7 +451,8 @@ class LandingPage_ extends State<LandingPage> {
                                       record: AllLoans[index],
                                       user: false,
                                       choice: chosen,
-                                      role: Myuser!["role"]);
+                                      role: Myuser!["role"],
+                                      CurrentUser: Myuser);
                                 },
                                 itemCount: AllLoans.length,
                                 shrinkWrap: true,
@@ -493,7 +492,8 @@ class LandingPage_ extends State<LandingPage> {
                                       record: LiveLoans[index],
                                       user: true,
                                       choice: chosen,
-                                      role: Myuser!["role"]);
+                                      role: Myuser!["role"],
+                                      CurrentUser: Myuser);
                                 },
                                 itemCount: LiveLoans.length,
                                 shrinkWrap: true,
@@ -533,7 +533,8 @@ class LandingPage_ extends State<LandingPage> {
                                       record: AllUserLoans[index],
                                       user: true,
                                       choice: chosen,
-                                      role: Myuser!["role"]);
+                                      role: Myuser!["role"],
+                                      CurrentUser: Myuser);
                                 },
                                 itemCount: AllUserLoans.length,
                                 shrinkWrap: true,
@@ -590,13 +591,15 @@ class LoanItem extends StatelessWidget {
   final bool user;
   final int choice;
   final String role;
+  final dynamic CurrentUser;
 
   const LoanItem(
       {Key? key,
       this.record,
       required this.user,
       required this.choice,
-      required this.role})
+      required this.role,
+      required this.CurrentUser})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -805,7 +808,7 @@ class LoanItem extends StatelessWidget {
                                   style: themeData.textTheme.bodyText1,
                                 ),
                                 Text(
-                                    record["state"] == "complete"
+                                    record["state"] == "completed"
                                         ? "done"
                                         : record["state"],
                                     textAlign: TextAlign.end,
@@ -835,7 +838,7 @@ class LoanItem extends StatelessWidget {
                                 ),
                                 Text(
                                   record["started"] != "N/A"
-                                      ? " ${dd.format(new DateTime.fromMicrosecondsSinceEpoch(record["started"]["seconds"] * 1000999))}"
+                                      ? " ${dd.format(new DateTime.fromMicrosecondsSinceEpoch(record["started"]["seconds"] * 1000000))}"
                                       : record["started"],
                                   textAlign: TextAlign.end,
                                   style: themeData.textTheme.subtitle2,
@@ -878,7 +881,10 @@ class LoanItem extends StatelessWidget {
                             GestureDetector(
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => const DetailsPage()));
+                                    builder: (context) => DetailsPage(
+                                          record: record,
+                                          user: role,
+                                        )));
                               },
                               child: Row(
                                 mainAxisAlignment:
@@ -926,7 +932,10 @@ class LoanItem extends StatelessWidget {
                     backgroundColor: Colors.green),
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const PaymentsPage()));
+                      builder: (context) => PaymentsPage(
+                            record: record,
+                            user: CurrentUser,
+                          )));
                 },
                 child: const Text(
                   "Register Payments",

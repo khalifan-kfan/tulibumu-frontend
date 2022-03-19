@@ -99,225 +99,230 @@ class _AddUser extends State<AddUser> {
                 ),
               ),
             ),
-            body: Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                addVerticalSpace(30),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 18.0),
-                  child: const Text(
-                    'Join',
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                        fontSize: 25.0,
-                        letterSpacing: 1.0,
-                        color: Colors.black,
-                        fontFamily: "Comfortaa"),
+            body: Container(
+                child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  addVerticalSpace(30),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 18.0),
+                    child: const Text(
+                      'Join',
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          fontSize: 25.0,
+                          letterSpacing: 1.0,
+                          color: Colors.black,
+                          fontFamily: "Comfortaa"),
+                    ),
                   ),
-                ),
-                SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Form(
-                      key: formkey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          addVerticalSpace(20),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Fullname',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              TextFormField(
-                                validator: (String? value) {
-                                  if (value!.isEmpty) {
-                                    return "* Required";
-                                  } else {
-                                    return null;
-                                  }
-                                },
-                                controller: _name,
-                                decoration: const InputDecoration(
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.green, width: 2.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.black, width: 2.0),
-                                    ),
-                                    hintText: "Mick Mugume",
-                                    hintStyle: TextStyle(
-                                        fontSize: 14, color: Colors.grey),
-                                    filled: true),
-                              ),
-                            ],
-                          ),
-                          addVerticalSpace(20),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Contact',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              TextFormField(
-                                validator: (String? value) {
-                                  if (value!.isEmpty) {
-                                    return "* Required";
-                                  } else {
-                                    return null;
-                                  }
-                                },
-                                controller: _contact,
-                                decoration: const InputDecoration(
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.green, width: 2.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.black, width: 2.0),
-                                    ),
-                                    hintText: "0702734902",
-                                    hintStyle: TextStyle(
-                                        fontSize: 14, color: Colors.grey),
-                                    filled: true),
-                              ),
-                            ],
-                          ),
-                          addVerticalSpace(20),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Password',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  letterSpacing: 1.0,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              TextFormField(
-                                  controller: _pass,
-                                  validator: (String? value) {
-                                    if (value!.isEmpty) {
-                                      return "* Required";
-                                    } else if (value.length < 6) {
-                                      return "Password should be atleast 6 characters";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  // onSaved: (String password) {
-                                  // this._password = password;
-                                  //},
-                                  obscureText: true,
-                                  decoration: const InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.green, width: 2.0),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.black, width: 2.0),
-                                      ),
-                                      hintText: "***********",
-                                      hintStyle: TextStyle(
-                                          fontSize: 20, color: Colors.grey),
-                                      filled: true)),
-                            ],
-                          ),
-                          addVerticalSpace(20),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Confirm Password',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  letterSpacing: 1.0,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              TextFormField(
-                                  controller: _conf_pass,
-                                  validator: (String? value) {
-                                    if (value!.isEmpty) {
-                                      return "* Required";
-                                    } else if (value.length < 6) {
-                                      return "Password should be atleast 6 characters";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  // onSaved: (String password) {
-                                  // this._password = password;
-                                  //},
-                                  obscureText: true,
-                                  decoration: const InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.green, width: 2.0),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.black, width: 2.0),
-                                      ),
-                                      hintText: "***********",
-                                      hintStyle: TextStyle(
-                                          fontSize: 20, color: Colors.grey),
-                                      filled: true)),
-                            ],
-                          ),
-                          addVerticalSpace(20),
-                          Column(
-                            children: <Widget>[
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5)),
-                                    minimumSize: const Size(350, 50),
-                                    backgroundColor: Colors.green),
-                                onPressed: () {
-                                  if (formkey.currentState!.validate()) {
-                                    // login
-                                    SignUpUser(
-                                        _contact.text, _pass.text, context);
-                                  } else {
-                                    showText("Fill the fields correctly");
-                                  }
-                                },
-                                child: const Text(
-                                  "Sign up",
+                  SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Form(
+                        key: formkey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            addVerticalSpace(20),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Fullname',
+                                  textAlign: TextAlign.start,
                                   style: TextStyle(
-                                      fontSize: 20, color: COLOR_WHITE),
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          )
-                        ],
-                      )),
-                ),
-              ],
+                                TextFormField(
+                                  validator: (String? value) {
+                                    if (value!.isEmpty) {
+                                      return "* Required";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                  controller: _name,
+                                  decoration: const InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.green, width: 2.0),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.black, width: 2.0),
+                                      ),
+                                      hintText: "Mick Mugume",
+                                      hintStyle: TextStyle(
+                                          fontSize: 14, color: Colors.grey),
+                                      filled: true),
+                                ),
+                              ],
+                            ),
+                            addVerticalSpace(20),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Contact',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                TextFormField(
+                                  validator: (String? value) {
+                                    if (value!.isEmpty) {
+                                      return "* Required";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                  controller: _contact,
+                                  decoration: const InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.green, width: 2.0),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.black, width: 2.0),
+                                      ),
+                                      hintText: "0702734902",
+                                      hintStyle: TextStyle(
+                                          fontSize: 14, color: Colors.grey),
+                                      filled: true),
+                                ),
+                              ],
+                            ),
+                            addVerticalSpace(20),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Password',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    letterSpacing: 1.0,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                TextFormField(
+                                    controller: _pass,
+                                    validator: (String? value) {
+                                      if (value!.isEmpty) {
+                                        return "* Required";
+                                      } else if (value.length < 6) {
+                                        return "Password should be atleast 6 characters";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                    // onSaved: (String password) {
+                                    // this._password = password;
+                                    //},
+                                    obscureText: true,
+                                    decoration: const InputDecoration(
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.green, width: 2.0),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 2.0),
+                                        ),
+                                        hintText: "***********",
+                                        hintStyle: TextStyle(
+                                            fontSize: 20, color: Colors.grey),
+                                        filled: true)),
+                              ],
+                            ),
+                            addVerticalSpace(20),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Confirm Password',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    letterSpacing: 1.0,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                TextFormField(
+                                    controller: _conf_pass,
+                                    validator: (String? value) {
+                                      if (value!.isEmpty) {
+                                        return "* Required";
+                                      } else if (value.length < 6) {
+                                        return "Password should be atleast 6 characters";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                    // onSaved: (String password) {
+                                    // this._password = password;
+                                    //},
+                                    obscureText: true,
+                                    decoration: const InputDecoration(
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.green, width: 2.0),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 2.0),
+                                        ),
+                                        hintText: "***********",
+                                        hintStyle: TextStyle(
+                                            fontSize: 20, color: Colors.grey),
+                                        filled: true)),
+                              ],
+                            ),
+                            addVerticalSpace(20),
+                            Column(
+                              children: <Widget>[
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      minimumSize: const Size(350, 50),
+                                      backgroundColor: Colors.green),
+                                  onPressed: () {
+                                    if (formkey.currentState!.validate()) {
+                                      // login
+                                      SignUpUser(
+                                          _contact.text, _pass.text, context);
+                                    } else {
+                                      showText("Fill the fields correctly");
+                                    }
+                                  },
+                                  child: const Text(
+                                    "Sign up",
+                                    style: TextStyle(
+                                        fontSize: 20, color: COLOR_WHITE),
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        )),
+                  ),
+                ],
+              ),
             ))));
   }
 

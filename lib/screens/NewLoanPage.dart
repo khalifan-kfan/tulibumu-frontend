@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:tulibumu/utils/widget_functions.dart';
 
+import 'DetailsPage.dart';
 import 'LandingPage.dart';
 import 'LoginScreen.dart';
 
@@ -251,8 +252,8 @@ class _State__ extends State<LoanItem> {
   Widget build(BuildContext context) {
     //DateTime record_day = record["date"].toDate();
     final ThemeData themeData = Theme.of(context);
+    final dd = DateFormat('dd-MM-yyyy');
 
-    final dd = new DateFormat('dd-MM-yyyy');
     return Column(
       children: [
         Container(
@@ -481,9 +482,11 @@ class _State__ extends State<LoanItem> {
                                 style: themeData.textTheme.bodyText1,
                               ),
                               Text(
-                                widget.record["started"].toString(),
+                                widget.record["started"] != "N/A"
+                                    ? " ${dd.format(new DateTime.fromMicrosecondsSinceEpoch(widget.record["started"]["seconds"] * 1000000))}"
+                                    : widget.record["started"],
                                 textAlign: TextAlign.end,
-                                style: themeData.textTheme.bodyText1,
+                                style: themeData.textTheme.subtitle2,
                               ),
                             ],
                           ),
@@ -520,28 +523,37 @@ class _State__ extends State<LoanItem> {
                             ],
                           ),
                           addVerticalSpace(3),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "more",
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.5),
-                              ),
-                              Text(
-                                "....",
-                                textAlign: TextAlign.end,
-                                style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.5),
-                              ),
-                            ],
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => DetailsPage(
+                                        record: widget.record,
+                                        user: widget.currentUser!["role"],
+                                      )));
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "more",
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.5),
+                                ),
+                                Text(
+                                  "....",
+                                  textAlign: TextAlign.end,
+                                  style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.5),
+                                ),
+                              ],
+                            ),
                           ),
                         ]),
                       ),
