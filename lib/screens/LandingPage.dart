@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tulibumu/custom/BorderIcon.dart';
@@ -27,7 +25,7 @@ class LandingPage extends StatefulWidget {
 class LandingPage_ extends State<LandingPage> {
   late int chosen = 1;
 
-  double Equity = 0;
+  num Equity = 0;
   String error = "";
   Map<String, dynamic>? Myuser;
 
@@ -75,9 +73,9 @@ class LandingPage_ extends State<LandingPage> {
       //check status code
       final parsed = json.decode(res) as Map<String, dynamic>;
       if (statusCode == 200) {
-        print(parsed["total"]);
+        //  print(parsed["total"]);
         setState(() {
-          Equity = double.parse(parsed["total"]);
+          Equity = parsed["total"];
         });
       } else if (statusCode != 200) {
         showText('Equity failed to fetch, trying again');
@@ -316,7 +314,7 @@ class LandingPage_ extends State<LandingPage> {
                         ),
                         Padding(
                             padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: Equity == 0 && error.isEmpty
+                            child: Equity == 0.00 && error.isEmpty
                                 ? Text(
                                     "loading...",
                                     style: themeData.textTheme.bodyText1,

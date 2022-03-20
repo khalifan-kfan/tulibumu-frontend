@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:tulibumu/screens/AddUser.dart';
 import 'package:tulibumu/screens/LoginScreen.dart';
-import 'package:tulibumu/screens/NewLoanPage.dart';
 import 'package:tulibumu/utils/constants.dart';
 import 'package:tulibumu/screens/UserPage.dart';
 import 'package:tulibumu/screens/AddLoan.dart';
+import 'package:tulibumu/utils/widget_functions.dart';
+
+import 'NewLoanPage.dart';
 
 class MyDrawer extends StatelessWidget {
   final String people = 'assets/svgs/people.svg';
@@ -25,9 +29,37 @@ class MyDrawer extends StatelessWidget {
     //print(await storage.read(key: "token"));
   }
 
+  Future<void> goToAdd(BuildContext context) async {
+    showText("Wait please.. loading users...");
+    String url = '$BaseUrl/api/users/all/';
+
+    await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    ).then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+      //check status code
+      final parsed = json.decode(res) as Map<String, dynamic>;
+      if (statusCode == 200) {
+        //double
+        if (parsed["data"] != null) {
+          // print(parsed["data"]);
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => AddLoan(
+                    users: parsed["data"],
+                  )));
+        } else if (statusCode != 200) {
+          showText("can't fetch users, can't add loan try agin letter ");
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    print(user);
     final ThemeData themeData = Theme.of(context);
     // print(user);
     return Drawer(
@@ -74,21 +106,6 @@ class MyDrawer extends StatelessWidget {
                         ),
                         Text(
                           user["fullName"],
-                          textAlign: TextAlign.end,
-                          style: themeData.textTheme.headline5,
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Contact:",
-                          textAlign: TextAlign.start,
-                          style: themeData.textTheme.bodyText2,
-                        ),
-                        Text(
-                          "070987654",
                           textAlign: TextAlign.end,
                           style: themeData.textTheme.headline5,
                         ),
@@ -194,8 +211,7 @@ class MyDrawer extends StatelessWidget {
                 style: TextStyle(fontSize: 18),
               ),
               onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const AddLoan()));
+                goToAdd(context);
               },
             ),
           if (user!["role"] == "treasurer" ||

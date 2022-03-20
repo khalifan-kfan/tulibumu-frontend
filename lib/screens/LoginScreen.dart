@@ -29,10 +29,10 @@ class _loginPageState extends State<LoginScreen> {
 
   Future<void> SetUser(Map<String, dynamic> data) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', data["token"]);
-    await prefs.setString('fullName', data["fullName"]);
-    await prefs.setString('role', data["role"]);
-    await prefs.setString('id', data["id"]);
+    prefs.setString('token', data["token"]);
+    prefs.setString('fullName', data["fullName"]);
+    prefs.setString('role', data["role"]);
+    prefs.setString('id', data["id"]);
   }
 
   Future<void> SignInUser(

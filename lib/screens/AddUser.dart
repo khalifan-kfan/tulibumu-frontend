@@ -1,10 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-//import 'package:flutter/services.dart';
-import 'package:tulibumu/custom/BorderIcon.dart';
-import 'package:tulibumu/main.dart';
-//import 'package:tulibumu/screens/SignupPage.dart';
+import 'package:http/http.dart' as http;
 import 'package:tulibumu/screens/Landingpage.dart';
 import 'package:tulibumu/utils/constants.dart';
 import 'package:tulibumu/utils/widget_functions.dart';
@@ -25,39 +24,58 @@ class _AddUser extends State<AddUser> {
 
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
   final String back = 'assets/svgs/back.svg';
+  bool loading = false;
+  String msg = "";
 
-  Future<void> SignUpUser(
-      String memail, String mpassword, BuildContext context) async {
-    showText("Tusanyuse okulaba ;-)");
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => LandingPage()));
-    // try {
-    // call api
+  Future<void> SignUpUser(String contact, String mpassword, String fName,
+      BuildContext context) async {
+    String url = '$BaseUrl/api/users/register';
+    setState(() {
+      loading = true;
+    });
 
-    //   if (userCredential.user != null) {
-    //     // back to landing page
-    //     showText("Tusanyuse okulaba ;-)");
-    //      Navigator.of(context).push(MaterialPageRoute(
-    //        builder: (context) => LandingPage()));
-    //     //main();
-
-    //   } else {
-    //     // something went wrong
-    //     showText("somewthing went wrong");
-    //     showText("somewthing went wrong");
-    //   }
-    // } on FirebaseAuthException catch (e) {
-    //   if (e.code == 'user-not-found') {
-    //     print("no such user");
-    //     showText(e.toString());
-    //   } else if (e.code == 'wrong-password') {
-    //     print('Wrong password provided for that user.');
-    //     showText(e.toString());
-    //   }
-    // } catch (e) {
-    //   showText(e.toString());
-    //   print(e);
-    // }
+    await http
+        .post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, dynamic>{
+        "contact": contact,
+        "password": mpassword,
+        "fullName": fName,
+        "role": "member"
+      }),
+    )
+        .then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+      //check status code
+      final parsed = json.decode(res) as Map<String, dynamic>;
+      if (statusCode == 201) {
+        //double
+        if (parsed["message"] != null) {
+          setState(() {
+            msg = parsed["message"];
+          });
+          showText(parsed["message"]);
+        }
+        setState(() {
+          loading = false;
+        });
+        showText("Added successfully");
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const LandingPage()));
+      } else if (statusCode != 201) {
+        showText('payment failed');
+        setState(() {
+          msg = "Something went wrong";
+        });
+        setState(() {
+          loading = false;
+        });
+      }
+    });
   }
 
   void showText(String msg) {
@@ -266,8 +284,8 @@ class _AddUser extends State<AddUser> {
                                     validator: (String? value) {
                                       if (value!.isEmpty) {
                                         return "* Required";
-                                      } else if (value.length < 6) {
-                                        return "Password should be atleast 6 characters";
+                                      } else if (value != _pass.text) {
+                                        return "Password should be the same";
                                       } else {
                                         return null;
                                       }
@@ -291,33 +309,53 @@ class _AddUser extends State<AddUser> {
                                         filled: true)),
                               ],
                             ),
-                            addVerticalSpace(20),
-                            Column(
-                              children: <Widget>[
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5)),
-                                      minimumSize: const Size(350, 50),
-                                      backgroundColor: Colors.green),
-                                  onPressed: () {
-                                    if (formkey.currentState!.validate()) {
-                                      // login
-                                      SignUpUser(
-                                          _contact.text, _pass.text, context);
-                                    } else {
-                                      showText("Fill the fields correctly");
-                                    }
-                                  },
-                                  child: const Text(
-                                    "Sign up",
-                                    style: TextStyle(
-                                        fontSize: 20, color: COLOR_WHITE),
-                                  ),
+                            addVerticalSpace(5),
+                            if (msg.isNotEmpty)
+                              Text(
+                                msg,
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black,
                                 ),
-                              ],
-                            )
+                              ),
+                            addVerticalSpace(20),
+                            if (loading)
+                              Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 5,
+                                  backgroundColor: Colors.green,
+                                  valueColor: new AlwaysStoppedAnimation<Color>(
+                                      Colors.yellow),
+                                ),
+                              )
+                            else
+                              Column(
+                                children: <Widget>[
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5)),
+                                        minimumSize: const Size(350, 50),
+                                        backgroundColor: Colors.green),
+                                    onPressed: () {
+                                      if (formkey.currentState!.validate()) {
+                                        // login
+                                        SignUpUser(_contact.text, _pass.text,
+                                            _name.text, context);
+                                      } else {
+                                        showText("Fill the fields correctly");
+                                      }
+                                    },
+                                    child: const Text(
+                                      "Sign up",
+                                      style: TextStyle(
+                                          fontSize: 20, color: COLOR_WHITE),
+                                    ),
+                                  ),
+                                ],
+                              )
                           ],
                         )),
                   ),
