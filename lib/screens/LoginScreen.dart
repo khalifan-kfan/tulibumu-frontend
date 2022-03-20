@@ -82,7 +82,7 @@ class _loginPageState extends State<LoginScreen> {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.blueGrey,
         textColor: Colors.white,
         fontSize: 16.0);
   }
@@ -99,17 +99,20 @@ class _loginPageState extends State<LoginScreen> {
                 backgroundColor: COLOR_BACK_GROUND,
                 elevation: 0,
                 automaticallyImplyLeading: false,
-                title: LimitedBox(
-                  child: SvgPicture.asset(
-                    back,
-                    color: Colors.black,
-                    width: 40,
-                    height: 40,
-                    theme:
-                        SvgTheme(currentColor: null, fontSize: 12, xHeight: 6),
+                title: GestureDetector(
+                  // onTap: () => Navigator.of(context).pop(),
+                  child: LimitedBox(
+                    child: SvgPicture.asset(
+                      back,
+                      color: Colors.black,
+                      width: 40,
+                      height: 40,
+                      theme: SvgTheme(
+                          currentColor: null, fontSize: 12, xHeight: 6),
+                    ),
+                    maxHeight: 40,
+                    maxWidth: 40,
                   ),
-                  maxHeight: 40,
-                  maxWidth: 40,
                 ),
               ),
               body: Center(
@@ -162,7 +165,7 @@ class _loginPageState extends State<LoginScreen> {
                                   decoration: const InputDecoration(
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.green, width: 2.0),
+                                            color: Colors.blueGrey, width: 2.0),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
@@ -207,7 +210,8 @@ class _loginPageState extends State<LoginScreen> {
                                     decoration: const InputDecoration(
                                         focusedBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
-                                              color: Colors.green, width: 2.0),
+                                              color: Colors.blueGrey,
+                                              width: 2.0),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
@@ -223,7 +227,7 @@ class _loginPageState extends State<LoginScreen> {
                             isLoading
                                 ? CircularProgressIndicator(
                                     strokeWidth: 5,
-                                    backgroundColor: Colors.green,
+                                    backgroundColor: Colors.blueGrey,
                                     valueColor:
                                         new AlwaysStoppedAnimation<Color>(
                                             Colors.yellow),
@@ -236,7 +240,7 @@ class _loginPageState extends State<LoginScreen> {
                                                 borderRadius:
                                                     BorderRadius.circular(5)),
                                             minimumSize: const Size(350, 50),
-                                            backgroundColor: Colors.green),
+                                            backgroundColor: Colors.blueGrey),
                                         onPressed: () {
                                           if (formkey.currentState!
                                               .validate()) {

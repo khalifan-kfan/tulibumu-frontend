@@ -5,9 +5,9 @@ const COLOR_GREY = Color.fromRGBO(141, 141, 141, 1.0);
 
 const COLOR_WHITE = Colors.white;
 const COLOR_DARK_BLUE = Color.fromRGBO(20, 25, 45, 1.0);
-const COLOR_BACK_GROUND = Color(0xFFECFFCC);
-const COLOR_CLICK_GREEN = Color(0xFF96C15F);
-const COLOR_UNCLICKER_GREEN = Color(0xFFACC28F);
+const COLOR_BACK_GROUND = Color(0xFFCDDEFF);
+const COLOR_CLICK_GREEN = Color(0xFF5F75C1);
+const COLOR_UNCLICKER_GREEN = Color(0xFF8FA3C2);
 const MY_SECRET_API_KEY = "";
 const MY_SECRET_SUBSCRIPTION_KEY = "";
 const MYSECRET_USER_ID = "";

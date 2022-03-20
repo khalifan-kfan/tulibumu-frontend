@@ -24,44 +24,6 @@ class _State_ extends State<UserPage> {
     super.initState();
   }
 
-  // List<Map<String, dynamic>> images = [
-  //   {
-  //     "id": "011",
-  //     "fullname": "Muwonge khalifan",
-  //     "role": "member",
-  //     "contact": "0707098765"
-  //   },
-  //   {
-  //     "id": "011",
-  //     "fullname": "Muwonge khalifan",
-  //     "role": "member",
-  //     "contact": "0707098765"
-  //   },
-  //   {
-  //     "id": "011",
-  //     "fullname": "Muwonge khalifan",
-  //     "role": "member",
-  //     "contact": "0707098765"
-  //   },
-  //   {
-  //     "id": "012",
-  //     "fullname": "Muwonge jk",
-  //     "role": "member",
-  //     "contact": "0707098965"
-  //   },
-  //   {
-  //     "id": "012",
-  //     "fullname": "Khali jk",
-  //     "role": "member",
-  //     "contact": "0707098965"
-  //   },
-  //   {
-  //     "id": "012",
-  //     "fullname": "Khali jk",
-  //     "role": "member",
-  //     "contact": "0707098965"
-  //   },
-  // ];
   Future<void> AUsers() async {
     String url = '$BaseUrl/api/users/all/';
 
@@ -179,7 +141,7 @@ class _State_ extends State<UserPage> {
                 Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 5,
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.blueGrey,
                     valueColor:
                         new AlwaysStoppedAnimation<Color>(Colors.yellow),
                   ),

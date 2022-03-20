@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:tulibumu/screens/AboutusPage.dart';
 import 'package:tulibumu/screens/AddUser.dart';
 import 'package:tulibumu/screens/LoginScreen.dart';
 import 'package:tulibumu/utils/constants.dart';
 import 'package:tulibumu/screens/UserPage.dart';
 import 'package:tulibumu/screens/AddLoan.dart';
 import 'package:tulibumu/utils/widget_functions.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'NewLoanPage.dart';
 
@@ -105,7 +107,7 @@ class MyDrawer extends StatelessWidget {
                           style: themeData.textTheme.bodyText2,
                         ),
                         Text(
-                          user["fullName"],
+                          user["fullName"] ?? "",
                           textAlign: TextAlign.end,
                           style: themeData.textTheme.headline5,
                         ),
@@ -120,7 +122,7 @@ class MyDrawer extends StatelessWidget {
                           style: themeData.textTheme.bodyText2,
                         ),
                         Text(
-                          user["role"],
+                          user["role"] ?? "",
                           textAlign: TextAlign.end,
                           style: themeData.textTheme.headline5,
                         ),
@@ -163,7 +165,10 @@ class MyDrawer extends StatelessWidget {
               "About us",
               style: TextStyle(fontSize: 18),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => AboutusPage()));
+            },
           ),
           ListTile(
             leading: Icon(Icons.email),
@@ -171,7 +176,7 @@ class MyDrawer extends StatelessWidget {
               "Contact us",
               style: TextStyle(fontSize: 18),
             ),
-            onTap: null,
+            onTap: () => launch("tel://0706081432"),
           ),
           ListTile(
             leading: Icon(Icons.arrow_back),

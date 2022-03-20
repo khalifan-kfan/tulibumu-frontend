@@ -153,7 +153,7 @@ class _State extends State<NewLoanPage> {
                 Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 5,
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.blueGrey,
                     valueColor:
                         new AlwaysStoppedAnimation<Color>(Colors.yellow),
                   ),
@@ -240,6 +240,38 @@ class _State__ extends State<LoanItem> {
           isLoading = false;
         });
       } else if (statusCode != 201) {
+        showText('Failed:' + " " + parsed["message"]);
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
+  }
+
+  Future<void> CancelLoan() async {
+    String url = '$BaseUrl/api/loans/cancel/' + widget.record["id"];
+    setState(() {
+      isLoading = true;
+    });
+
+    await http.delete(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    ).then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+      //check status code
+      final parsed = json.decode(res) as Map<String, dynamic>;
+      if (statusCode == 204) {
+        showText("Loan deleted successfullly");
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const LandingPage()));
+        setState(() {
+          isLoading = false;
+        });
+      } else if (statusCode != 204) {
         showText('Failed:' + " " + parsed["message"]);
         setState(() {
           isLoading = false;
@@ -573,7 +605,7 @@ class _State__ extends State<LoanItem> {
                 builder: (BuildContext context) {
                   return Container(
                     height: 200,
-                    color: Colors.amber,
+                    color: Colors.lightBlue,
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -582,7 +614,7 @@ class _State__ extends State<LoanItem> {
                           const Text(
                               'Confirm if you really want to cash this loan',
                               style: TextStyle(
-                                  color: Colors.blue,
+                                  color: Colors.white,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                   height: 1.5)),
@@ -591,21 +623,30 @@ class _State__ extends State<LoanItem> {
                             Center(
                               child: CircularProgressIndicator(
                                 strokeWidth: 5,
-                                backgroundColor: Colors.green,
+                                backgroundColor: Colors.blueGrey,
                                 valueColor: new AlwaysStoppedAnimation<Color>(
                                     Colors.yellow),
                               ),
                             )
                           else
-                            ElevatedButton(
-                              child: const Text('Confirm'),
-                              onPressed: () => CashLoan(),
+                            Column(
+                              children: [
+                                ElevatedButton(
+                                  child: const Text('Confirm'),
+                                  onPressed: () => CashLoan(),
+                                ),
+                                addVerticalSpace(7),
+                                ElevatedButton(
+                                  child: const Text('Cancel Loan'),
+                                  onPressed: () => CancelLoan(),
+                                ),
+                                addVerticalSpace(7),
+                                ElevatedButton(
+                                  child: const Text('Close'),
+                                  onPressed: () => Navigator.pop(context),
+                                ),
+                              ],
                             ),
-                          addVerticalSpace(7),
-                          ElevatedButton(
-                            child: const Text('Cancel'),
-                            onPressed: () => Navigator.pop(context),
-                          )
                         ],
                       ),
                     ),
@@ -620,7 +661,7 @@ class _State__ extends State<LoanItem> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
             margin: const EdgeInsets.only(left: 20),
             child: Text(
-              "Cash loan",
+              "Cash or cancel loan",
               style: themeData.textTheme.headline5,
             ),
           ),

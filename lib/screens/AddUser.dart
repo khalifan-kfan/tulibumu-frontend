@@ -170,7 +170,7 @@ class _AddUser extends State<AddUser> {
                                   decoration: const InputDecoration(
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.green, width: 2.0),
+                                            color: Colors.blueGrey, width: 2.0),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
@@ -208,7 +208,7 @@ class _AddUser extends State<AddUser> {
                                   decoration: const InputDecoration(
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.green, width: 2.0),
+                                            color: Colors.blueGrey, width: 2.0),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
@@ -253,7 +253,8 @@ class _AddUser extends State<AddUser> {
                                     decoration: const InputDecoration(
                                         focusedBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
-                                              color: Colors.green, width: 2.0),
+                                              color: Colors.blueGrey,
+                                              width: 2.0),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
@@ -297,7 +298,8 @@ class _AddUser extends State<AddUser> {
                                     decoration: const InputDecoration(
                                         focusedBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
-                                              color: Colors.green, width: 2.0),
+                                              color: Colors.blueGrey,
+                                              width: 2.0),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
@@ -324,7 +326,7 @@ class _AddUser extends State<AddUser> {
                               Center(
                                 child: CircularProgressIndicator(
                                   strokeWidth: 5,
-                                  backgroundColor: Colors.green,
+                                  backgroundColor: Colors.blueGrey,
                                   valueColor: new AlwaysStoppedAnimation<Color>(
                                       Colors.yellow),
                                 ),
@@ -338,7 +340,7 @@ class _AddUser extends State<AddUser> {
                                             borderRadius:
                                                 BorderRadius.circular(5)),
                                         minimumSize: const Size(350, 50),
-                                        backgroundColor: Colors.green),
+                                        backgroundColor: Colors.blueGrey),
                                     onPressed: () {
                                       if (formkey.currentState!.validate()) {
                                         // login

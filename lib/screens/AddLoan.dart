@@ -212,7 +212,7 @@ class _addloan_ extends State<AddLoan> {
                                 decoration: const InputDecoration(
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
-                                          color: Colors.green, width: 2.0),
+                                          color: Colors.blueGrey, width: 2.0),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
@@ -244,10 +244,10 @@ class _addloan_ extends State<AddLoan> {
                                 value: selectedName == "" ? "" : selectedName,
                                 icon: const Icon(Icons.arrow_downward),
                                 elevation: 16,
-                                style: const TextStyle(color: Colors.green),
+                                style: const TextStyle(color: Colors.black),
                                 underline: Container(
                                   height: 2,
-                                  color: Colors.green,
+                                  color: Colors.blueGrey,
                                 ),
                                 onChanged: (String? newValue) {
                                   setState(() {
@@ -305,7 +305,7 @@ class _addloan_ extends State<AddLoan> {
                                   decoration: const InputDecoration(
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.green, width: 2.0),
+                                            color: Colors.blueGrey, width: 2.0),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
@@ -357,7 +357,7 @@ class _addloan_ extends State<AddLoan> {
                                   decoration: const InputDecoration(
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.green, width: 2.0),
+                                            color: Colors.blueGrey, width: 2.0),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
@@ -420,7 +420,7 @@ class _addloan_ extends State<AddLoan> {
                                         decoration: const InputDecoration(
                                             focusedBorder: OutlineInputBorder(
                                               borderSide: BorderSide(
-                                                  color: Colors.green),
+                                                  color: Colors.blueGrey),
                                             ),
                                             enabledBorder: OutlineInputBorder(
                                               borderSide: BorderSide(
@@ -456,10 +456,10 @@ class _addloan_ extends State<AddLoan> {
                                       icon: const Icon(Icons.arrow_downward),
                                       elevation: 16,
                                       style:
-                                          const TextStyle(color: Colors.green),
+                                          const TextStyle(color: Colors.black),
                                       underline: Container(
                                         height: 2,
-                                        color: Colors.green,
+                                        color: Colors.blueGrey,
                                       ),
                                       onChanged: (String? newValue) {
                                         setState(() {
@@ -490,7 +490,7 @@ class _addloan_ extends State<AddLoan> {
                             Center(
                               child: CircularProgressIndicator(
                                 strokeWidth: 5,
-                                backgroundColor: Colors.green,
+                                backgroundColor: Colors.blueGrey,
                                 valueColor: new AlwaysStoppedAnimation<Color>(
                                     Colors.yellow),
                               ),
@@ -502,7 +502,7 @@ class _addloan_ extends State<AddLoan> {
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(5)),
                                     minimumSize: const Size(350, 50),
-                                    backgroundColor: Colors.green),
+                                    backgroundColor: Colors.blueGrey),
                                 onPressed: () {
                                   if (formkey.currentState!.validate()) {
                                     // send loan

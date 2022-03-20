@@ -22,30 +22,6 @@ class Details_ extends State<DetailsPage> {
   final String back = 'assets/svgs/back.svg';
   final dd = new DateFormat('dd-MM-yyyy');
 
-  List<Map<String, dynamic>> images = [
-    {
-      "id": "011",
-      "amount": 70005544,
-      "to": "Muwonge khalifsn",
-      "to_id": "003403",
-      "approver": ["hfdjf", "hfgi", "dsiuvh"],
-      "state": "active",
-      "loan_time": 10,
-      "started": 0,
-      "intrest": 0.025,
-      "monthly_pay": 94090303,
-      "cashed": true,
-      "penalty_rate": 0.035,
-      "penalty_rate_on": "monthly_pay",
-      "fine": 0,
-      "confirmer": "julz",
-      "cash_returned": 44230234,
-      "months_count": 0,
-      "months_paid": 0,
-      "return_total": 4738473472
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -358,7 +334,11 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Text(widget.record["confirmer"]["name"].toString(),
+                          Text(
+                              widget.record["confirmer"] == ""
+                                  ? "Not yet"
+                                  : widget.record["confirmer"]["name"]
+                                      .toString(),
                               textAlign: TextAlign.end,
                               style: themeData.textTheme.bodyText1),
                         ],
@@ -395,8 +375,7 @@ class Details_ extends State<DetailsPage> {
                   ]),
                 ),
                 addVerticalSpace(5),
-                if (widget.user == "treasurer" ||
-                    widget.user == "admin" ||
+                if ((widget.user == "treasurer" || widget.user == "admin") &&
                     widget.record["state"] != "new")
                   Center(
                     child: Column(
@@ -406,7 +385,7 @@ class Details_ extends State<DetailsPage> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(5)),
                               minimumSize: const Size(300, 40),
-                              backgroundColor: Colors.green),
+                              backgroundColor: Colors.blueGrey),
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => PaymentsPage(

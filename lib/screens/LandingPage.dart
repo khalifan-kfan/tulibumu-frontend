@@ -26,6 +26,7 @@ class LandingPage_ extends State<LandingPage> {
   late int chosen = 1;
 
   num Equity = 0;
+  num reload = 30;
   String error = "";
   Map<String, dynamic>? Myuser;
 
@@ -138,7 +139,7 @@ class LandingPage_ extends State<LandingPage> {
 
     if (MyId.isNotEmpty) {
       setState(() {
-        loading = true;
+        loading = LiveLoans.length < 1 ? true : false;
       });
       await http.get(
         Uri.parse(url),
@@ -194,7 +195,7 @@ class LandingPage_ extends State<LandingPage> {
 
     if (MyId.isNotEmpty) {
       setState(() {
-        loading = true;
+        loading = AllUserLoans.length < 1 ? true : false;
       });
       await http.get(
         Uri.parse(url),
@@ -238,6 +239,52 @@ class LandingPage_ extends State<LandingPage> {
       });
     }
     //print(AllUserLoans);
+  }
+
+  Future<void> MoreLoans() async {
+    String url = '$BaseUrl/api/loans/more';
+    // setState(() {
+    //   loading = true;
+    // });
+
+    await http
+        .post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, dynamic>{"more": reload}),
+    )
+        .then((http.Response response) {
+      final String res = response.body;
+      final int statusCode = response.statusCode;
+      //check status code
+      final parsed = json.decode(res) as Map<String, dynamic>;
+      if (statusCode == 200) {
+        //double
+        if (parsed["message"] != null) {
+          showText(parsed["message"]);
+        } else if (parsed["data"] != null) {
+          setState(() {
+            AllLoans = AllLoans + parsed["data"];
+          });
+          if (parsed["data"].lenght > 0) {
+            reload += 30;
+          }
+          ;
+        }
+        // setState(() {
+        //   loading = false;
+        // });
+      } else if (statusCode != 200) {
+        showText(
+            'Loans failed to fetch, trying again with internet connection');
+
+        // setState(() {
+        //   loading = false;
+        // });
+      }
+    });
   }
 
   @override
@@ -375,7 +422,9 @@ class LandingPage_ extends State<LandingPage> {
                                 setState(() {
                                   chosen = 2;
                                 });
-                                UserLive();
+                                if (LiveLoans.length < 1) {
+                                  UserLive();
+                                }
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -398,7 +447,9 @@ class LandingPage_ extends State<LandingPage> {
                                 setState(() {
                                   chosen = 3;
                                 });
-                                AUserLoans();
+                                if (AllUserLoans.length < 1) {
+                                  AUserLoans();
+                                }
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -434,7 +485,7 @@ class LandingPage_ extends State<LandingPage> {
                         Center(
                           child: CircularProgressIndicator(
                             strokeWidth: 5,
-                            backgroundColor: Colors.green,
+                            backgroundColor: Colors.blueGrey,
                             valueColor: new AlwaysStoppedAnimation<Color>(
                                 Colors.yellow),
                           ),
@@ -443,39 +494,58 @@ class LandingPage_ extends State<LandingPage> {
                         Expanded(
                           child: Padding(
                               padding: sidePadding,
-                              child: ListView.separated(
-                                itemBuilder: (BuildContext, index) {
-                                  return LoanItem(
-                                      record: AllLoans[index],
-                                      user: false,
-                                      choice: chosen,
-                                      role: Myuser!["role"],
-                                      CurrentUser: Myuser);
-                                },
-                                itemCount: AllLoans.length,
-                                shrinkWrap: true,
-                                physics: BouncingScrollPhysics(),
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        const Divider(
-                                  color: COLOR_BACK_GROUND,
+                              child: RefreshIndicator(
+                                onRefresh: MoreLoans,
+                                child: ListView.separated(
+                                  itemBuilder: (BuildContext, index) {
+                                    return LoanItem(
+                                        record: AllLoans[index],
+                                        user: false,
+                                        choice: chosen,
+                                        role: Myuser!["role"],
+                                        CurrentUser: Myuser);
+                                  },
+                                  itemCount: AllLoans.length,
+                                  shrinkWrap: true,
+                                  physics: const BouncingScrollPhysics(
+                                      parent:
+                                          const AlwaysScrollableScrollPhysics()),
+                                  separatorBuilder:
+                                      (BuildContext context, int index) =>
+                                          const Divider(
+                                    color: COLOR_BACK_GROUND,
+                                  ),
+                                  scrollDirection: Axis.vertical,
                                 ),
-                                scrollDirection: Axis.vertical,
                               )),
                         )
                       else
-                        Center(
-                          child: Text(
-                            loans_msg,
-                            style: themeData.textTheme.headline5,
-                          ),
+                        Column(
+                          children: [
+                            Center(
+                              child: Text(
+                                loans_msg,
+                                style: themeData.textTheme.headline5,
+                              ),
+                            ),
+                            addVerticalSpace(4),
+                            Center(
+                              child: GestureDetector(
+                                onTap: IntialLoans,
+                                child: Text(
+                                  "Click to retry",
+                                  style: themeData.textTheme.headline5,
+                                ),
+                              ),
+                            )
+                          ],
                         )
                     else if (chosen == 2)
                       if (loading)
                         Center(
                           child: CircularProgressIndicator(
                             strokeWidth: 5,
-                            backgroundColor: Colors.green,
+                            backgroundColor: Colors.blueGrey,
                             valueColor: new AlwaysStoppedAnimation<Color>(
                                 Colors.yellow),
                           ),
@@ -484,39 +554,58 @@ class LandingPage_ extends State<LandingPage> {
                         Expanded(
                           child: Padding(
                               padding: sidePadding,
-                              child: ListView.separated(
-                                itemBuilder: (BuildContext, index) {
-                                  return LoanItem(
-                                      record: LiveLoans[index],
-                                      user: true,
-                                      choice: chosen,
-                                      role: Myuser!["role"],
-                                      CurrentUser: Myuser);
-                                },
-                                itemCount: LiveLoans.length,
-                                shrinkWrap: true,
-                                physics: BouncingScrollPhysics(),
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        const Divider(
-                                  color: COLOR_BACK_GROUND,
+                              child: RefreshIndicator(
+                                onRefresh: UserLive,
+                                child: ListView.separated(
+                                  itemBuilder: (BuildContext, index) {
+                                    return LoanItem(
+                                        record: LiveLoans[index],
+                                        user: true,
+                                        choice: chosen,
+                                        role: Myuser!["role"],
+                                        CurrentUser: Myuser);
+                                  },
+                                  itemCount: LiveLoans.length,
+                                  shrinkWrap: true,
+                                  physics: BouncingScrollPhysics(
+                                      parent:
+                                          const AlwaysScrollableScrollPhysics()),
+                                  separatorBuilder:
+                                      (BuildContext context, int index) =>
+                                          const Divider(
+                                    color: COLOR_BACK_GROUND,
+                                  ),
+                                  scrollDirection: Axis.vertical,
                                 ),
-                                scrollDirection: Axis.vertical,
                               )),
                         )
                       else
-                        Center(
-                          child: Text(
-                            live_loans_msg,
-                            style: themeData.textTheme.headline5,
-                          ),
+                        Column(
+                          children: [
+                            Center(
+                              child: Text(
+                                live_loans_msg,
+                                style: themeData.textTheme.headline5,
+                              ),
+                            ),
+                            addVerticalSpace(4),
+                            Center(
+                              child: GestureDetector(
+                                onTap: UserLive,
+                                child: Text(
+                                  "Click to retry",
+                                  style: themeData.textTheme.headline5,
+                                ),
+                              ),
+                            )
+                          ],
                         )
                     else if (chosen == 3)
                       if (loading)
                         Center(
                           child: CircularProgressIndicator(
                             strokeWidth: 5,
-                            backgroundColor: Colors.green,
+                            backgroundColor: Colors.blueGrey,
                             valueColor: new AlwaysStoppedAnimation<Color>(
                                 Colors.yellow),
                           ),
@@ -525,32 +614,51 @@ class LandingPage_ extends State<LandingPage> {
                         Expanded(
                           child: Padding(
                               padding: sidePadding,
-                              child: ListView.separated(
-                                itemBuilder: (BuildContext, index) {
-                                  return LoanItem(
-                                      record: AllUserLoans[index],
-                                      user: true,
-                                      choice: chosen,
-                                      role: Myuser!["role"],
-                                      CurrentUser: Myuser);
-                                },
-                                itemCount: AllUserLoans.length,
-                                shrinkWrap: true,
-                                physics: BouncingScrollPhysics(),
-                                scrollDirection: Axis.vertical,
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        const Divider(
-                                  color: COLOR_BACK_GROUND,
+                              child: RefreshIndicator(
+                                onRefresh: AUserLoans,
+                                child: ListView.separated(
+                                  itemBuilder: (BuildContext, index) {
+                                    return LoanItem(
+                                        record: AllUserLoans[index],
+                                        user: true,
+                                        choice: chosen,
+                                        role: Myuser!["role"],
+                                        CurrentUser: Myuser);
+                                  },
+                                  itemCount: AllUserLoans.length,
+                                  shrinkWrap: true,
+                                  physics: BouncingScrollPhysics(
+                                      parent:
+                                          const AlwaysScrollableScrollPhysics()),
+                                  scrollDirection: Axis.vertical,
+                                  separatorBuilder:
+                                      (BuildContext context, int index) =>
+                                          const Divider(
+                                    color: COLOR_BACK_GROUND,
+                                  ),
                                 ),
                               )),
                         )
                       else
-                        Center(
-                          child: Text(
-                            all_loans_msg,
-                            style: themeData.textTheme.headline5,
-                          ),
+                        Column(
+                          children: [
+                            Center(
+                              child: Text(
+                                all_loans_msg,
+                                style: themeData.textTheme.headline5,
+                              ),
+                            ),
+                            addVerticalSpace(4),
+                            Center(
+                              child: GestureDetector(
+                                onTap: AUserLoans,
+                                child: Text(
+                                  "Click to retry",
+                                  style: themeData.textTheme.headline5,
+                                ),
+                              ),
+                            )
+                          ],
                         )
                     else
                       Center(
@@ -687,7 +795,7 @@ class LoanItem extends StatelessWidget {
                 const Divider(
                   //   height: 25,
                   thickness: 1,
-                  color: Colors.green,
+                  color: Colors.blueGrey,
                 ),
                 IntrinsicHeight(
                   child: Row(
@@ -927,7 +1035,7 @@ class LoanItem extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5)),
                     minimumSize: const Size(300, 40),
-                    backgroundColor: Colors.green),
+                    backgroundColor: Colors.blueGrey),
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PaymentsPage(
