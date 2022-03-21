@@ -2,10 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:flutter/services.dart';
-import 'package:tulibumu/custom/BorderIcon.dart';
-import 'package:tulibumu/main.dart';
-//import 'package:tulibumu/screens/SignupPage.dart';
+
 import 'package:tulibumu/screens/Landingpage.dart';
 import 'package:tulibumu/utils/constants.dart';
 import 'package:tulibumu/utils/widget_functions.dart';

@@ -260,10 +260,8 @@ class _State__ extends State<LoanItem> {
         'Content-Type': 'application/json',
       },
     ).then((http.Response response) {
-      final String res = response.body;
       final int statusCode = response.statusCode;
       //check status code
-      final parsed = json.decode(res) as Map<String, dynamic>;
       if (statusCode == 204) {
         showText("Loan deleted successfullly");
         Navigator.of(context)
@@ -272,7 +270,7 @@ class _State__ extends State<LoanItem> {
           isLoading = false;
         });
       } else if (statusCode != 204) {
-        showText('Failed:' + " " + parsed["message"]);
+        showText('Failed to delete loan');
         setState(() {
           isLoading = false;
         });
@@ -407,7 +405,9 @@ class _State__ extends State<LoanItem> {
                                     style: themeData.textTheme.bodyText1,
                                   ),
                                   Text(
-                                    widget.record["return_total"].toString(),
+                                    widget.record["return_total"]
+                                        .toInt()
+                                        .toString(),
                                     textAlign: TextAlign.end,
                                     style: themeData.textTheme.bodyText1,
                                   ),
@@ -424,7 +424,9 @@ class _State__ extends State<LoanItem> {
                                     style: themeData.textTheme.bodyText1,
                                   ),
                                   Text(
-                                    widget.record["monthly_pay"].toString(),
+                                    (widget.record["monthly_pay"])
+                                        .toInt()
+                                        .toString(),
                                     textAlign: TextAlign.end,
                                     style: themeData.textTheme.bodyText1,
                                   ),
@@ -441,7 +443,9 @@ class _State__ extends State<LoanItem> {
                                     style: themeData.textTheme.bodyText1,
                                   ),
                                   Text(
-                                    widget.record["cash_returned"].toString(),
+                                    widget.record["cash_returned"]
+                                        .toInt()
+                                        .toString(),
                                     textAlign: TextAlign.end,
                                     style: themeData.textTheme.bodyText1,
                                   ),
@@ -458,7 +462,7 @@ class _State__ extends State<LoanItem> {
                                     style: themeData.textTheme.bodyText1,
                                   ),
                                   Text(
-                                    widget.record["fine"].toString(),
+                                    widget.record["fine"].toInt().toString(),
                                     textAlign: TextAlign.end,
                                     style: themeData.textTheme.bodyText1,
                                   ),

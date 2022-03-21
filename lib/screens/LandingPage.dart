@@ -836,7 +836,7 @@ class LoanItem extends StatelessWidget {
                                       style: themeData.textTheme.bodyText1,
                                     ),
                                     Text(
-                                      record["return_total"].toString(),
+                                      record["return_total"].toInt().toString(),
                                       textAlign: TextAlign.end,
                                       style: themeData.textTheme.bodyText1,
                                     ),
@@ -853,7 +853,7 @@ class LoanItem extends StatelessWidget {
                                       style: themeData.textTheme.bodyText1,
                                     ),
                                     Text(
-                                      record["monthly_pay"].toString(),
+                                      record["monthly_pay"].toInt().toString(),
                                       textAlign: TextAlign.end,
                                       style: themeData.textTheme.bodyText1,
                                     ),
@@ -870,7 +870,9 @@ class LoanItem extends StatelessWidget {
                                       style: themeData.textTheme.bodyText1,
                                     ),
                                     Text(
-                                      record["cash_returned"].toString(),
+                                      record["cash_returned"]
+                                          .toInt()
+                                          .toString(),
                                       textAlign: TextAlign.end,
                                       style: themeData.textTheme.bodyText1,
                                     ),
@@ -887,7 +889,7 @@ class LoanItem extends StatelessWidget {
                                       style: themeData.textTheme.bodyText1,
                                     ),
                                     Text(
-                                      record["fine"].toString(),
+                                      record["fine"].toInt().toString(),
                                       textAlign: TextAlign.end,
                                       style: themeData.textTheme.bodyText1,
                                     ),

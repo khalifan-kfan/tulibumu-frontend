@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:tulibumu/screens/AboutusPage.dart';
 import 'package:tulibumu/screens/AddUser.dart';
+import 'package:tulibumu/screens/ChangePasswordPage.dart';
+import 'package:tulibumu/screens/EquityPage.dart';
 import 'package:tulibumu/screens/LoginScreen.dart';
 import 'package:tulibumu/utils/constants.dart';
 import 'package:tulibumu/screens/UserPage.dart';
@@ -179,6 +181,18 @@ class MyDrawer extends StatelessWidget {
             onTap: () => launch("tel://0706081432"),
           ),
           ListTile(
+            leading: Icon(Icons.password),
+            title: Text(
+              "Change password",
+              style: TextStyle(fontSize: 18),
+            ),
+            onTap: () async {
+              ResetUser().then((value) => Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => ChangePasswordPage(MyUser: user))));
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.arrow_back),
             title: Text(
               "Log out",
@@ -197,6 +211,19 @@ class MyDrawer extends StatelessWidget {
                 thickness: 1,
                 color: Colors.black,
               ),
+            ),
+          if (user!["role"] == "treasurer" ||
+              user!["role"] == "admin" ||
+              user!["role"] == "officer")
+            ListTile(
+              title: const Text(
+                "Edit equity",
+                style: TextStyle(fontSize: 18),
+              ),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const EquityPage()));
+              },
             ),
           if (user!["role"] == "treasurer" || user!["role"] == "admin")
             ListTile(
