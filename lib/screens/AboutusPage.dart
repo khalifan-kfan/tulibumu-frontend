@@ -33,6 +33,8 @@ class AboutusPage extends StatelessWidget {
         ),
       ),
       body: Column(children: [
+        Image.asset('assets/images/logo_tuli.png'),
+        addVerticalSpace(20),
         const Text(
           "Tulibumu App",
           textAlign: TextAlign.center,

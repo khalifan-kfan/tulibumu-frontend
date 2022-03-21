@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tulibumu/utils/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:tulibumu/utils/widget_functions.dart';
 
 class SplashScreen extends StatelessWidget {
   @override
@@ -11,13 +11,21 @@ class SplashScreen extends StatelessWidget {
         child: Scaffold(
       backgroundColor: COLOR_BACK_GROUND,
       body: Center(
-          child: const Text(
-        "Tulibumu App",
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 20,
-          color: COLOR_BLACK,
-        ),
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.asset('assets/images/logo_tuli.png'),
+          addVerticalSpace(45),
+          Text(
+            "Tulibumu App",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 20,
+              color: COLOR_BLACK,
+            ),
+          ),
+        ],
       )),
     ));
   }
