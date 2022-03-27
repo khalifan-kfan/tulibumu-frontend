@@ -356,19 +356,26 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          Column(
-                            children: [
-                              Text(widget.record["approver"][0].toString(),
+                          widget.record["approver"].length == 3
+                              ? Column(
+                                  children: [
+                                    Text(
+                                        widget.record["approver"][0].toString(),
+                                        textAlign: TextAlign.end,
+                                        style: themeData.textTheme.bodyText1),
+                                    Text(
+                                        widget.record["approver"][1].toString(),
+                                        textAlign: TextAlign.end,
+                                        style: themeData.textTheme.bodyText1),
+                                    Text(
+                                        widget.record["approver"][2].toString(),
+                                        textAlign: TextAlign.end,
+                                        style: themeData.textTheme.bodyText1),
+                                  ],
+                                )
+                              : Text("Admin",
                                   textAlign: TextAlign.end,
                                   style: themeData.textTheme.bodyText1),
-                              Text(widget.record["approver"][1].toString(),
-                                  textAlign: TextAlign.end,
-                                  style: themeData.textTheme.bodyText1),
-                              Text(widget.record["approver"][2].toString(),
-                                  textAlign: TextAlign.end,
-                                  style: themeData.textTheme.bodyText1),
-                            ],
-                          ),
                         ],
                       ),
                     ),

@@ -9,6 +9,7 @@ import 'package:tulibumu/screens/AddUser.dart';
 import 'package:tulibumu/screens/ChangePasswordPage.dart';
 import 'package:tulibumu/screens/EquityPage.dart';
 import 'package:tulibumu/screens/LoginScreen.dart';
+import 'package:tulibumu/utils/Users.dart';
 import 'package:tulibumu/utils/constants.dart';
 import 'package:tulibumu/screens/UserPage.dart';
 import 'package:tulibumu/screens/AddLoan.dart';
@@ -20,10 +21,11 @@ import 'NewLoanPage.dart';
 class MyDrawer extends StatelessWidget {
   final String people = 'assets/svgs/people.svg';
   final String usr = 'assets/svgs/users.svg';
+  Users usrs_ = new Users();
 
   final dynamic user;
 
-  const MyDrawer({Key? key, this.user}) : super(key: key);
+  MyDrawer({Key? key, this.user}) : super(key: key);
 
   Future<void> ResetUser() async {
     final prefs = await SharedPreferences.getInstance();
@@ -36,30 +38,37 @@ class MyDrawer extends StatelessWidget {
   Future<void> goToAdd(BuildContext context) async {
     showText("Wait please.. loading users...");
     String url = '$BaseUrl/api/users/all/';
-
-    await http.get(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-    ).then((http.Response response) {
-      final String res = response.body;
-      final int statusCode = response.statusCode;
-      //check status code
-      final parsed = json.decode(res) as Map<String, dynamic>;
-      if (statusCode == 200) {
-        //double
-        if (parsed["data"] != null) {
-          // print(parsed["data"]);
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => AddLoan(
-                    users: parsed["data"],
-                  )));
-        } else if (statusCode != 200) {
-          showText("can't fetch users, can't add loan try agin letter ");
+    if (usrs_.usrs.length < 1) {
+      await http.get(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+      ).then((http.Response response) {
+        final String res = response.body;
+        final int statusCode = response.statusCode;
+        //check status code
+        final parsed = json.decode(res) as Map<String, dynamic>;
+        if (statusCode == 200) {
+          //double
+          if (parsed["data"] != null) {
+            // print(parsed["data"]);
+            usrs_.setUsrs = parsed["data"];
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => AddLoan(
+                      users: parsed["data"],
+                    )));
+          } else if (statusCode != 200) {
+            showText("can't fetch users, can't add loan try agin letter ");
+          }
         }
-      }
-    });
+      });
+    } else {
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => AddLoan(
+                users: usrs_.getUsrs,
+              )));
+    }
   }
 
   @override
