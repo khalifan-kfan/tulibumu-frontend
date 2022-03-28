@@ -188,7 +188,7 @@ class _EquityPage extends State<EquityPage> {
                             )
                           : Equity > 0
                               ? Text(
-                                  Equity.toString() + " " + "/=",
+                                  Equity.toInt().toString() + " " + "/=",
                                   style: themeData.textTheme.headline1,
                                 )
                               : error.isNotEmpty && Equity == 0

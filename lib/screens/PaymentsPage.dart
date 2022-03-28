@@ -79,8 +79,9 @@ class _State extends State<PaymentsPage> {
     super.initState();
   }
 
-  Future<void> PayLoan(int month, double fine) async {
+  Future<void> PayLoan(num month, num fine) async {
     String url = '$BaseUrl/api/loans/payment/' + widget.record!["id"];
+
     setState(() {
       loading = true;
     });
@@ -91,7 +92,7 @@ class _State extends State<PaymentsPage> {
       headers: <String, String>{
         'Content-Type': 'application/json',
       },
-      body: jsonEncode(<String, dynamic>{"month": month, "fine": fine}),
+      body: jsonEncode(<String, num>{"month": month, "fine": fine}),
     )
         .then((http.Response response) {
       final String res = response.body;
@@ -112,8 +113,10 @@ class _State extends State<PaymentsPage> {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => const LandingPage()));
       } else if (statusCode != 200) {
+        // print(parsed["message"]);
         showText('payment failed');
         //SetEquity();
+
         setState(() {
           msg_pay = "Something went wrong";
         });
@@ -273,7 +276,7 @@ class _State extends State<PaymentsPage> {
                               builder: (BuildContext context) {
                                 return Container(
                                   height: 200,
-                                  color: Colors.amber,
+                                  color: Colors.lightBlue,
                                   child: Center(
                                     child: Column(
                                       mainAxisAlignment:
@@ -287,7 +290,7 @@ class _State extends State<PaymentsPage> {
                                                         1)
                                                     .toString(),
                                             style: TextStyle(
-                                                color: Colors.blue,
+                                                color: Colors.white,
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w700,
                                                 height: 1.5)),
@@ -461,8 +464,8 @@ class _State extends State<PaymentsPage> {
                                             else
                                               ElevatedButton(
                                                 child: const Text('Confirm'),
-                                                onPressed: () => PayLoan(
-                                                    0, widget.record["fine"]),
+                                                onPressed: () => PayLoan(0,
+                                                    widget.record["fine"] + 0),
                                               ),
                                             addVerticalSpace(7),
                                             if (!loading)

@@ -393,7 +393,7 @@ class LandingPage_ extends State<LandingPage> {
                                   )
                                 : Equity > 0
                                     ? Text(
-                                        Equity.toString() + " " + "/=",
+                                        Equity.toInt().toString() + " " + "/=",
                                         style: themeData.textTheme.headline1,
                                       )
                                     : error.isNotEmpty && Equity == 0
