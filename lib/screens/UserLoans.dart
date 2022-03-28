@@ -1,26 +1,23 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:tulibumu/utils/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:tulibumu/utils/widget_functions.dart';
-
 import 'DetailsPage.dart';
-import 'LandingPage.dart';
 import 'LoginScreen.dart';
 
-class NewLoanPage extends StatefulWidget {
-  const NewLoanPage({Key? key}) : super(key: key);
+class UserLoans extends StatefulWidget {
+  final dynamic user__;
+  const UserLoans({Key? key, required this.user__}) : super(key: key);
 
   @override
-  _State createState() => _State();
+  _Sta_te createState() => _Sta_te();
 }
 
-class _State extends State<NewLoanPage> {
+class _Sta_te extends State<UserLoans> {
   final String back = 'assets/svgs/back.svg';
 
   bool loading = false;
@@ -53,7 +50,7 @@ class _State extends State<NewLoanPage> {
   }
 
   Future<void> AllLoans() async {
-    String url = '$BaseUrl/api/loans/new/';
+    String url = '$BaseUrl/api/users/loans/' + widget.user__["id"];
 
     setState(() {
       loading = true;
@@ -69,25 +66,22 @@ class _State extends State<NewLoanPage> {
       //check status code
       final parsed = json.decode(res) as Map<String, dynamic>;
       if (statusCode == 200) {
-        //double
-        if (parsed["message"] != null) {
-          setState(() {
-            all_msg = parsed["message"];
-          });
-        } else if (parsed["data"] != null) {
+        if (parsed["data"] != null) {
           setState(() {
             AllNewLoans = AllNewLoans + parsed["data"];
           });
+        } else {
+          all_msg = "No loans";
         }
         setState(() {
           loading = false;
         });
       } else if (statusCode != 200) {
-        showText(
-            'Loans failed to fetch, trying again with internet connection');
-        //SetEquity();
+        // showText(
+        //     'Loans failed to fetch, trying again with internet connection');
+        // //SetEquity();
         setState(() {
-          all_msg = "Something went wrong";
+          all_msg = "User probably has no loans";
         });
         setState(() {
           loading = false;
@@ -134,11 +128,11 @@ class _State extends State<NewLoanPage> {
                         ),
                       ),
                     ),
-                    addHorizontalSpace(45),
+                    addHorizontalSpace(5),
                     Text(
-                      'New Loan',
+                      widget.user__["fullName"],
                       textAlign: TextAlign.start,
-                      style: themeData.textTheme.headline1,
+                      style: themeData.textTheme.headline6,
                     ),
                   ]),
               addVerticalSpace(5),
@@ -166,7 +160,7 @@ class _State extends State<NewLoanPage> {
                         itemBuilder: (BuildContext, index) {
                           return LoanItem(
                               record: AllNewLoans[index],
-                              user: false,
+                              user: true,
                               currentUser: Myuser);
                         },
                         itemCount: AllNewLoans.length,
@@ -209,74 +203,6 @@ class LoanItem extends StatefulWidget {
 
 class _State__ extends State<LoanItem> {
   bool isLoading = false;
-
-  Future<void> CashLoan() async {
-    String url = '$BaseUrl/api/loans/cashout/' + widget.record["id"];
-    setState(() {
-      isLoading = true;
-    });
-
-    await http
-        .put(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(<String, dynamic>{
-        "confirmer_id": widget.currentUser?["id"],
-        "name": widget.currentUser?["fullName"],
-      }),
-    )
-        .then((http.Response response) {
-      final String res = response.body;
-      final int statusCode = response.statusCode;
-      //check status code
-      final parsed = json.decode(res) as Map<String, dynamic>;
-      if (statusCode == 201) {
-        showText("Loan cashed successfullly");
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const LandingPage()));
-        setState(() {
-          isLoading = false;
-        });
-      } else if (statusCode != 201) {
-        showText('Failed:' + " " + parsed["message"]);
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
-  }
-
-  Future<void> CancelLoan() async {
-    String url = '$BaseUrl/api/loans/cancel/' + widget.record["id"];
-    setState(() {
-      isLoading = true;
-    });
-
-    await http.delete(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-    ).then((http.Response response) {
-      final int statusCode = response.statusCode;
-      //check status code
-      if (statusCode == 204) {
-        showText("Loan deleted successfullly");
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const LandingPage()));
-        setState(() {
-          isLoading = false;
-        });
-      } else if (statusCode != 204) {
-        showText('Failed to delete loan');
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -598,76 +524,6 @@ class _State__ extends State<LoanItem> {
                 ),
               ),
             ],
-          ),
-        ),
-        addVerticalSpace(10),
-        GestureDetector(
-          onTap: () {
-            // CashLoan();
-            showModalBottomSheet<void>(
-                context: context,
-                builder: (BuildContext context) {
-                  return Container(
-                    height: 200,
-                    color: Colors.lightBlue,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          const Text(
-                              'Confirm if you really want to cash this loan',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  height: 1.5)),
-                          addVerticalSpace(14),
-                          if (isLoading)
-                            Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 5,
-                                backgroundColor: Colors.blueGrey,
-                                valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.yellow),
-                              ),
-                            )
-                          else
-                            Column(
-                              children: [
-                                ElevatedButton(
-                                  child: const Text('Confirm'),
-                                  onPressed: () => CashLoan(),
-                                ),
-                                addVerticalSpace(7),
-                                ElevatedButton(
-                                  child: const Text('Cancel Loan'),
-                                  onPressed: () => CancelLoan(),
-                                ),
-                                addVerticalSpace(7),
-                                ElevatedButton(
-                                  child: const Text('Close'),
-                                  onPressed: () => Navigator.pop(context),
-                                ),
-                              ],
-                            ),
-                        ],
-                      ),
-                    ),
-                  );
-                });
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: COLOR_CLICK_GREEN,
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
-            margin: const EdgeInsets.only(left: 20),
-            child: Text(
-              "Cash or cancel loan",
-              style: themeData.textTheme.headline5,
-            ),
           ),
         ),
       ],

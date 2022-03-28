@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tulibumu/screens/UserLoans.dart';
 import 'package:tulibumu/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:tulibumu/utils/widget_functions.dart';
@@ -235,7 +236,12 @@ class UserItem extends StatelessWidget {
               Expanded(
                 flex: 4,
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => UserLoans(
+                              user__: record,
+                            )));
+                  },
                   child: Container(
                     width: 30,
                     decoration: BoxDecoration(
