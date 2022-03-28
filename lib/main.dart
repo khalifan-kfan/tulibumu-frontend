@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tulibumu/screens/LandingPage.dart';
 import 'package:tulibumu/screens/LoginScreen.dart';
 import 'package:tulibumu/screens/SplashScreen.dart';
+
 import 'package:tulibumu/utils/constants.dart';
 import 'dart:ui';
 
@@ -25,7 +26,6 @@ class _MyApp extends State<MyApp> {
 
   @override
   void initState() {
-    // getState();
     super.initState();
   }
 

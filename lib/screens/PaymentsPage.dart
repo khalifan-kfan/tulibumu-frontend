@@ -429,7 +429,7 @@ class _State extends State<PaymentsPage> {
                                   builder: (BuildContext context) {
                                     return Container(
                                       height: 200,
-                                      color: Colors.amber,
+                                      color: Colors.lightBlue,
                                       child: Center(
                                         child: Column(
                                           mainAxisAlignment:
@@ -442,7 +442,7 @@ class _State extends State<PaymentsPage> {
                                                     widget.record["fine"]
                                                         .toString(),
                                                 style: TextStyle(
-                                                    color: Colors.blue,
+                                                    color: Colors.white,
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w700,
                                                     height: 1.5)),

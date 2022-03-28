@@ -24,12 +24,10 @@ class LandingPage extends StatefulWidget {
 
 class LandingPage_ extends State<LandingPage> {
   late int chosen = 1;
-
   num Equity = 0;
   num reload = 30;
   String error = "";
   Map<String, dynamic>? Myuser;
-
   List<dynamic> AllLoans = [];
   List<dynamic> LiveLoans = [];
   List<dynamic> AllUserLoans = [];
@@ -287,12 +285,39 @@ class LandingPage_ extends State<LandingPage> {
     });
   }
 
+  Future<void> checkIsTodayVisit() async {
+    var prefs = await SharedPreferences.getInstance();
+    final int? lastVisitDate = prefs.getInt('lastVisitDay') ?? 0;
+    int toDayDate = DateTime.now().day;
+    if (toDayDate != lastVisitDate) {
+      // this is the user same day visit again and again
+      String url = '$BaseUrl/api/loans/months/update';
+      await http.patch(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+      ).then((http.Response response) {
+        // final String res = response.body;
+        final int statusCode = response.statusCode;
+        //check status code
+        if (statusCode == 200) {
+        } else if (statusCode != 200) {}
+      });
+      prefs.setInt("lastVisitDay", toDayDate);
+    } else {
+      //for the firstday
+      prefs.setInt("lastVisitDay", toDayDate);
+    }
+  }
+
   @override
   void initState() {
     chosen = 1;
     getState();
     SetEquity();
     IntialLoans();
+    checkIsTodayVisit();
     super.initState();
   }
 
