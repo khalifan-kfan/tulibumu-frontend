@@ -331,6 +331,23 @@ class Details_ extends State<DetailsPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
+                            "Loan type:",
+                            textAlign: TextAlign.start,
+                            style: themeData.textTheme.bodyText1,
+                          ),
+                          Text(widget.record["type"].toString(),
+                              textAlign: TextAlign.end,
+                              style: themeData.textTheme.bodyText1),
+                        ],
+                      ),
+                    ),
+                    addVerticalSpace(2),
+                    Padding(
+                      padding: sidePadding,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
                             "Confirmed by:",
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
@@ -356,19 +373,11 @@ class Details_ extends State<DetailsPage> {
                             textAlign: TextAlign.start,
                             style: themeData.textTheme.bodyText1,
                           ),
-                          widget.record["approver"].length == 3
+                          widget.record["approver"].length == 1
                               ? Column(
                                   children: [
                                     Text(
                                         widget.record["approver"][0].toString(),
-                                        textAlign: TextAlign.end,
-                                        style: themeData.textTheme.bodyText1),
-                                    Text(
-                                        widget.record["approver"][1].toString(),
-                                        textAlign: TextAlign.end,
-                                        style: themeData.textTheme.bodyText1),
-                                    Text(
-                                        widget.record["approver"][2].toString(),
                                         textAlign: TextAlign.end,
                                         style: themeData.textTheme.bodyText1),
                                   ],

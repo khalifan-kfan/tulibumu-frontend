@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 
 class AddLoan extends StatefulWidget {
   final List<dynamic> users;
+
   const AddLoan({Key? key, required this.users}) : super(key: key);
 
   @override
@@ -28,6 +29,8 @@ class _addloan_ extends State<AddLoan> {
   List<String> MyNames = [];
   String selectedPenOn = "";
   bool loading = false;
+  late int chosenLoan = 1;
+  late int chosenMoney = 5;
 
   var change = 0;
   @override
@@ -56,7 +59,7 @@ class _addloan_ extends State<AddLoan> {
   }
 
   Future<void> _addloan(String amount, String months, String pen, String rate,
-      BuildContext context) async {
+      String type, BuildContext context) async {
     setState(() {
       loading = true;
     });
@@ -79,14 +82,45 @@ class _addloan_ extends State<AddLoan> {
         'Content-Type': 'application/json',
       },
       body: jsonEncode(<String, dynamic>{
-        "amount": int.parse(amount),
+        "amount": chosenLoan == 3
+            ? int.parse(amount)
+            : chosenLoan == 2
+                ? 30000000
+                : chosenLoan == 1
+                    ? (chosenMoney * 1000000)
+                    : 0,
         "to": selectedName,
         "to_id": to_id,
         "approver": officers,
-        "loan_time": int.parse(months),
-        "intrest": (double.parse(rate) / 100),
-        "penalty_rate": (double.parse(pen) / 100),
-        "penalty_rate_on": selectedPenOn
+        "loan_time": chosenLoan == 3
+            ? int.parse(months)
+            : chosenLoan == 2
+                ? 3
+                : chosenLoan == 1
+                    ? 10
+                    : 0,
+        "intrest": chosenLoan == 3
+            ? (double.parse(rate) / 100)
+            : chosenLoan == 2
+                ? 0.025
+                : chosenLoan == 1
+                    ? 0.025
+                    : 0,
+        "penalty_rate": chosenLoan == 3
+            ? (double.parse(pen) / 100)
+            : chosenLoan == 2
+                ? 0.035
+                : chosenLoan == 1
+                    ? 0.035
+                    : 0,
+        "penalty_rate_on": chosenLoan == 3
+            ? selectedPenOn
+            : chosenLoan == 2
+                ? "Monthly pay"
+                : chosenLoan == 1
+                    ? "Monthly pay"
+                    : "",
+        "type": type
       }),
     )
         .then((http.Response response) {
@@ -182,55 +216,6 @@ class _addloan_ extends State<AddLoan> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Amount (UGX)',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              TextFormField(
-                                validator: (String? value) {
-                                  if (value!.isEmpty) {
-                                    return "* Required";
-                                  } else {
-                                    return null;
-                                  }
-                                },
-                                controller: _amount,
-                                keyboardType: TextInputType.numberWithOptions(
-                                    decimal: true),
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp('[0-9.,]+')),
-                                ],
-                                onChanged: (value) => {
-                                  setState(() {
-                                    ++change;
-                                  })
-                                },
-                                decoration: const InputDecoration(
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.blueGrey, width: 2.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.black, width: 2.0),
-                                    ),
-                                    hintText: "5000000",
-                                    hintStyle: TextStyle(
-                                        fontSize: 14, color: Colors.grey),
-                                    filled: true),
-                              ),
-                            ],
-                          ),
-                          addVerticalSpace(5),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
                                 'Name for the loan ownwer.',
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
@@ -265,132 +250,450 @@ class _addloan_ extends State<AddLoan> {
                             ],
                           ),
                           addVerticalSpace(5),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Loan time (Months)',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  letterSpacing: 1.0,
-                                  color: Colors.black,
+                          const Text(
+                            'Loan type',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.black,
+                            ),
+                          ),
+                          addVerticalSpace(2),
+                          SingleChildScrollView(
+                            // horizontal scroller
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(
+                                parent: AlwaysScrollableScrollPhysics()),
+                            child: Row(
+                                // to make this list clickalbe
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        chosenLoan = 1;
+                                      });
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: chosenLoan == 1
+                                            ? COLOR_CLICK_GREEN
+                                            : COLOR_UNCLICKER_GREEN,
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 13),
+                                      margin: const EdgeInsets.only(left: 20),
+                                      child: Text(
+                                        "Mayongano",
+                                        style: themeData.textTheme.headline5,
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        chosenLoan = 2;
+                                      });
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: chosenLoan == 2
+                                            ? COLOR_CLICK_GREEN
+                                            : COLOR_UNCLICKER_GREEN,
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 13),
+                                      margin: const EdgeInsets.only(left: 20),
+                                      child: Text(
+                                        "Bulky",
+                                        style: themeData.textTheme.headline5,
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        chosenLoan = 3;
+                                      });
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: chosenLoan == 3
+                                            ? COLOR_CLICK_GREEN
+                                            : COLOR_UNCLICKER_GREEN,
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 13),
+                                      margin: const EdgeInsets.only(left: 20),
+                                      child: Text(
+                                        "Custom",
+                                        style: themeData.textTheme.headline5,
+                                      ),
+                                    ),
+                                  ),
+                                ]),
+                          ),
+                          if (chosenLoan == 1)
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Mayungano loan Money in (Millions)',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                              ),
-                              TextFormField(
-                                  controller: _months,
-                                  keyboardType: TextInputType.numberWithOptions(
-                                      decimal: true),
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp('[0-9.,]+')),
-                                  ],
-                                  onChanged: (value) => {
-                                        setState(() {
-                                          ++change;
-                                        })
-                                      },
-                                  validator: (String? value) {
-                                    if (value!.isEmpty) {
-                                      return "* Required";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  // onSaved: (String password) {
-                                  // this._password = password;
-                                  //},
-
-                                  decoration: const InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.blueGrey, width: 2.0),
+                                addVerticalSpace(5),
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            chosenMoney = 5;
+                                          });
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: chosenMoney == 5
+                                                ? COLOR_CLICK_GREEN
+                                                : COLOR_UNCLICKER_GREEN,
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 13),
+                                          margin:
+                                              const EdgeInsets.only(left: 20),
+                                          child: Text(
+                                            "5",
+                                            style:
+                                                themeData.textTheme.headline5,
+                                          ),
+                                        ),
                                       ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.black, width: 2.0),
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            chosenMoney = 10;
+                                          });
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: chosenMoney == 10
+                                                ? COLOR_CLICK_GREEN
+                                                : COLOR_UNCLICKER_GREEN,
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 13),
+                                          margin:
+                                              const EdgeInsets.only(left: 20),
+                                          child: Text(
+                                            "10",
+                                            style:
+                                                themeData.textTheme.headline5,
+                                          ),
+                                        ),
                                       ),
-                                      hintText: "3",
-                                      hintStyle: TextStyle(
-                                          fontSize: 14, color: Colors.grey),
-                                      filled: true)),
-                            ],
-                          ),
-                          addVerticalSpace(5),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Interest per month(%)',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  letterSpacing: 1.0,
-                                  color: Colors.black,
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            chosenMoney = 15;
+                                          });
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: chosenMoney == 15
+                                                ? COLOR_CLICK_GREEN
+                                                : COLOR_UNCLICKER_GREEN,
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 13),
+                                          margin:
+                                              const EdgeInsets.only(left: 20),
+                                          child: Text(
+                                            "15",
+                                            style:
+                                                themeData.textTheme.headline5,
+                                          ),
+                                        ),
+                                      ),
+                                    ]),
+                                const Text(
+                                  'This loan is issued for',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                              ),
-                              TextFormField(
-                                  controller: _rate,
-                                  onChanged: (value) => {
-                                        setState(() {
-                                          ++change;
-                                        })
+                                addVerticalSpace(5),
+                                Text(
+                                  "Amount: " +
+                                      (chosenMoney.toInt() * 1000000)
+                                          .toString(),
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                addVerticalSpace(5),
+                                const Text(
+                                  "Time: 10 months",
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                addVerticalSpace(5),
+                                const Text(
+                                  "Interest: 2.5%",
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                addVerticalSpace(5),
+                                Text(
+                                  "Monthly Pay:" +
+                                      ((((0.025 *
+                                                          (chosenMoney.toInt() *
+                                                              1000000)) *
+                                                      10) +
+                                                  (chosenMoney.toInt() *
+                                                      1000000)) /
+                                              10)
+                                          .toInt()
+                                          .toString(),
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                addVerticalSpace(5),
+                                const Text(
+                                  "Penalty Interest per missed month: 2.5% on monthly pay",
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                addVerticalSpace(5),
+                                const Text(
+                                  "Penalty Interest for extra months: 3.5% on total unpaid money",
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                addVerticalSpace(10),
+                                if (loading)
+                                  Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 5,
+                                      backgroundColor: Colors.blueGrey,
+                                      valueColor:
+                                          new AlwaysStoppedAnimation<Color>(
+                                              Colors.yellow),
+                                    ),
+                                  )
+                                else
+                                  Center(
+                                    child: TextButton(
+                                      style: TextButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          minimumSize: const Size(350, 50),
+                                          backgroundColor: Colors.blueGrey),
+                                      onPressed: () {
+                                        _addloan("", "", "", "", "Mayungano",
+                                            context);
                                       },
-                                  validator: (String? value) {
-                                    if (value!.isEmpty) {
-                                      return "* Required";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  // onSaved: (String password) {
-                                  // this._password = password;
-                                  //},
-                                  keyboardType: TextInputType.numberWithOptions(
-                                      decimal: true),
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp('[0-9.,]+')),
-                                  ],
-                                  decoration: const InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.blueGrey, width: 2.0),
+                                      child: const Text(
+                                        "Add Loan",
+                                        style: TextStyle(
+                                            fontSize: 20, color: COLOR_WHITE),
                                       ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.black, width: 2.0),
+                                    ),
+                                  )
+                              ],
+                            ),
+                          if (chosenLoan == 2)
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'This loan is issued for',
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                addVerticalSpace(5),
+                                const Text(
+                                  "Amount: 30,000,000",
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                addVerticalSpace(5),
+                                const Text(
+                                  "Time: 3 months",
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                addVerticalSpace(5),
+                                const Text(
+                                  "Interest: 2.5%",
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                addVerticalSpace(5),
+                                Text(
+                                  "Monthly Pay:" +
+                                      ((((0.025 * 30000000) * 3) + 30000000) /
+                                              3)
+                                          .toInt()
+                                          .toString(),
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                addVerticalSpace(5),
+                                const Text(
+                                  "Penalty Interest for extra months: 3.5% on monthly pay",
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                addVerticalSpace(10),
+                                if (loading)
+                                  Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 5,
+                                      backgroundColor: Colors.blueGrey,
+                                      valueColor:
+                                          new AlwaysStoppedAnimation<Color>(
+                                              Colors.yellow),
+                                    ),
+                                  )
+                                else
+                                  Center(
+                                    child: TextButton(
+                                      style: TextButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          minimumSize: const Size(350, 50),
+                                          backgroundColor: Colors.blueGrey),
+                                      onPressed: () {
+                                        // send loan
+                                        _addloan(
+                                            "", "", "", "", "Bulky", context);
+                                      },
+                                      child: const Text(
+                                        "Add Loan",
+                                        style: TextStyle(
+                                            fontSize: 20, color: COLOR_WHITE),
                                       ),
-                                      hintText: "3.5",
-                                      hintStyle: TextStyle(
-                                          fontSize: 14, color: Colors.grey),
-                                      filled: true)),
-                            ],
-                          ),
-                          addVerticalSpace(5),
-                          Text(
-                            _amount.text.isNotEmpty &&
-                                    _months.text.isNotEmpty &&
-                                    _rate.text.isNotEmpty
-                                ? 'Monthly pay: ${ReturnCoputation().toString()} shs'
-                                : "Monthly pay not computed yet",
-                            style: TextStyle(fontSize: 12, color: Colors.black),
-                          ),
-                          addVerticalSpace(10),
-                          addVerticalSpace(5),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                flex: 5,
-                                child: Column(
+                                    ),
+                                  )
+                              ],
+                            ),
+                          if (chosenLoan == 3)
+                            Column(
+                              children: [
+                                Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text(
-                                      'Fine rate per month(%)',
+                                      'Amount (UGX)',
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    TextFormField(
+                                      validator: (String? value) {
+                                        if (value!.isEmpty) {
+                                          return "* Required";
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                      controller: _amount,
+                                      keyboardType:
+                                          TextInputType.numberWithOptions(
+                                              decimal: true),
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp('[0-9.,]+')),
+                                      ],
+                                      onChanged: (value) => {
+                                        setState(() {
+                                          ++change;
+                                        })
+                                      },
+                                      decoration: const InputDecoration(
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Colors.blueGrey,
+                                                width: 2.0),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Colors.black,
+                                                width: 2.0),
+                                          ),
+                                          hintText: "5000000",
+                                          hintStyle: TextStyle(
+                                              fontSize: 14, color: Colors.grey),
+                                          filled: true),
+                                    ),
+                                  ],
+                                ),
+                                addVerticalSpace(5),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Loan time (Months)',
                                       textAlign: TextAlign.start,
                                       style: TextStyle(
                                         fontSize: 12,
@@ -399,7 +702,69 @@ class _addloan_ extends State<AddLoan> {
                                       ),
                                     ),
                                     TextFormField(
-                                        controller: _pen,
+                                        controller: _months,
+                                        keyboardType:
+                                            TextInputType.numberWithOptions(
+                                                decimal: true),
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.allow(
+                                              RegExp('[0-9.,]+')),
+                                        ],
+                                        onChanged: (value) => {
+                                              setState(() {
+                                                ++change;
+                                              })
+                                            },
+                                        validator: (String? value) {
+                                          if (value!.isEmpty) {
+                                            return "* Required";
+                                          } else {
+                                            return null;
+                                          }
+                                        },
+                                        // onSaved: (String password) {
+                                        // this._password = password;
+                                        //},
+
+                                        decoration: const InputDecoration(
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.blueGrey,
+                                                  width: 2.0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.black,
+                                                  width: 2.0),
+                                            ),
+                                            hintText: "3",
+                                            hintStyle: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey),
+                                            filled: true)),
+                                  ],
+                                ),
+                                addVerticalSpace(5),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Interest per month(%)',
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        letterSpacing: 1.0,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    TextFormField(
+                                        controller: _rate,
+                                        onChanged: (value) => {
+                                              setState(() {
+                                                ++change;
+                                              })
+                                            },
                                         validator: (String? value) {
                                           if (value!.isEmpty) {
                                             return "* Required";
@@ -420,105 +785,190 @@ class _addloan_ extends State<AddLoan> {
                                         decoration: const InputDecoration(
                                             focusedBorder: OutlineInputBorder(
                                               borderSide: BorderSide(
-                                                  color: Colors.blueGrey),
+                                                  color: Colors.blueGrey,
+                                                  width: 2.0),
                                             ),
                                             enabledBorder: OutlineInputBorder(
                                               borderSide: BorderSide(
-                                                  color: Colors.black),
+                                                  color: Colors.black,
+                                                  width: 2.0),
                                             ),
-                                            hintText: "4.5",
+                                            hintText: "3.5",
                                             hintStyle: TextStyle(
                                                 fontSize: 14,
                                                 color: Colors.grey),
                                             filled: true)),
                                   ],
                                 ),
-                              ),
-                              addHorizontalSpace(4),
-                              Expanded(
-                                flex: 5,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                addVerticalSpace(5),
+                                Text(
+                                  _amount.text.isNotEmpty &&
+                                          _months.text.isNotEmpty &&
+                                          _rate.text.isNotEmpty
+                                      ? 'Monthly pay: ${ReturnCoputation().toString()} shs'
+                                      : "Monthly pay not computed yet",
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.black),
+                                ),
+                                addVerticalSpace(10),
+                                addVerticalSpace(5),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text(
-                                      'Fine computed on',
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        letterSpacing: 1.0,
-                                        color: Colors.black,
+                                    Expanded(
+                                      flex: 5,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Fine rate per month(%)',
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              letterSpacing: 1.0,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          TextFormField(
+                                              controller: _pen,
+                                              validator: (String? value) {
+                                                if (value!.isEmpty) {
+                                                  return "* Required";
+                                                } else {
+                                                  return null;
+                                                }
+                                              },
+                                              // onSaved: (String password) {
+                                              // this._password = password;
+                                              //},
+                                              keyboardType: TextInputType
+                                                  .numberWithOptions(
+                                                      decimal: true),
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter
+                                                    .allow(RegExp('[0-9.,]+')),
+                                              ],
+                                              decoration: const InputDecoration(
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.blueGrey),
+                                                  ),
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black),
+                                                  ),
+                                                  hintText: "4.5",
+                                                  hintStyle: TextStyle(
+                                                      fontSize: 14,
+                                                      color: Colors.grey),
+                                                  filled: true)),
+                                        ],
                                       ),
                                     ),
-                                    addVerticalSpace(2),
-                                    DropdownButton<String>(
-                                      value: selectedPenOn,
-                                      icon: const Icon(Icons.arrow_downward),
-                                      elevation: 16,
-                                      style:
-                                          const TextStyle(color: Colors.black),
-                                      underline: Container(
-                                        height: 2,
-                                        color: Colors.blueGrey,
+                                    addHorizontalSpace(4),
+                                    Expanded(
+                                      flex: 5,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          const Text(
+                                            'Fine computed on',
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              letterSpacing: 1.0,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          addVerticalSpace(2),
+                                          DropdownButton<String>(
+                                            value: selectedPenOn,
+                                            icon: const Icon(
+                                                Icons.arrow_downward),
+                                            elevation: 16,
+                                            style: const TextStyle(
+                                                color: Colors.black),
+                                            underline: Container(
+                                              height: 2,
+                                              color: Colors.blueGrey,
+                                            ),
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                selectedPenOn = newValue!;
+                                              });
+                                            },
+                                            items: _pen_on
+                                                .map<DropdownMenuItem<String>>(
+                                                    (String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(value),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ],
                                       ),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          selectedPenOn = newValue!;
-                                        });
-                                      },
-                                      items: _pen_on
-                                          .map<DropdownMenuItem<String>>(
-                                              (String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                          addVerticalSpace(5),
-                          const Text(
-                            "Note: All officers are considered to have approved this loan",
-                            style: TextStyle(fontSize: 12, color: Colors.black),
-                          ),
-                          addVerticalSpace(10),
-                          if (loading)
-                            Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 5,
-                                backgroundColor: Colors.blueGrey,
-                                valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.yellow),
-                              ),
-                            )
-                          else
-                            Center(
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5)),
-                                    minimumSize: const Size(350, 50),
-                                    backgroundColor: Colors.blueGrey),
-                                onPressed: () {
-                                  if (formkey.currentState!.validate()) {
-                                    // send loan
-                                    _addloan(_amount.text, _months.text,
-                                        _pen.text, _rate.text, context);
-                                  } else {
-                                    showText("Fill the fields correctly");
-                                  }
-                                },
-                                child: const Text(
-                                  "Add Loan",
+                                addVerticalSpace(5),
+                                const Text(
+                                  "Note: All officers are considered to have approved this loan",
                                   style: TextStyle(
-                                      fontSize: 20, color: COLOR_WHITE),
+                                      fontSize: 12, color: Colors.black),
                                 ),
-                              ),
-                            )
+                                addVerticalSpace(10),
+                                if (loading)
+                                  Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 5,
+                                      backgroundColor: Colors.blueGrey,
+                                      valueColor:
+                                          new AlwaysStoppedAnimation<Color>(
+                                              Colors.yellow),
+                                    ),
+                                  )
+                                else
+                                  Center(
+                                    child: TextButton(
+                                      style: TextButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          minimumSize: const Size(350, 50),
+                                          backgroundColor: Colors.blueGrey),
+                                      onPressed: () {
+                                        if (formkey.currentState!.validate()) {
+                                          // send loan
+                                          _addloan(
+                                              _amount.text,
+                                              _months.text,
+                                              _pen.text,
+                                              _rate.text,
+                                              "Custom",
+                                              context);
+                                        } else {
+                                          showText("Fill the fields correctly");
+                                        }
+                                      },
+                                      child: const Text(
+                                        "Add Loan",
+                                        style: TextStyle(
+                                            fontSize: 20, color: COLOR_WHITE),
+                                      ),
+                                    ),
+                                  )
+                              ],
+                            ),
                         ],
                       )),
                 ),
